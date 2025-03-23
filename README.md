@@ -1,1 +1,0 @@
-# legal-resolve.githib.io
