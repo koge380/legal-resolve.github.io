@@ -826,7 +826,10 @@ button {
 .services-slider-track {
     display: flex;
     transition: transform 0.3s ease-out;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
     will-change: transform;
+    perspective: 1000px;
 }
 
 /* Стили для карточек услуг */
@@ -841,6 +844,8 @@ button {
     transition: all var(--transition-normal);
     overflow: hidden;
     position: relative;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .service-header {
@@ -865,6 +870,7 @@ button {
 .service-icon svg {
     width: 24px;
     height: 24px;
+    transform: translateZ(0);
 }
 
 .service-title {
