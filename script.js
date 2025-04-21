@@ -60,6 +60,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Инициализация слайдера услуг
+    initServicesSlider();
+
     // Testimonials slider
     const testimonialsTrack = document.getElementById('testimonialsTrack');
     const prevBtn = document.getElementById('prevBtn');
@@ -304,8 +307,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
-
     // Mobile dropdown toggles
     const mobileDropdownToggles = document.querySelectorAll('.mobile-dropdown-toggle');
     mobileDropdownToggles.forEach(toggle => {
@@ -343,6 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
             parent.classList.toggle('active');
         });
     });
+
     // Анимация счетчиков
     const counters = document.querySelectorAll('.counter');
     const speed = 200; // Скорость анимации (меньше = быстрее)
@@ -365,6 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Запускаем анимацию с небольшой задержкой
         setTimeout(updateCount, 500);
     });
+
     // Функция для обновления текста статуса работы
     function updateWorkStatus() {
         const statusText = document.querySelector('.status-text');
@@ -383,12 +386,176 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Обновляем статус при загрузке страницы
-    document.addEventListener('DOMContentLoaded', function () {
-        updateWorkStatus();
+    updateWorkStatus();
 
-        // Обновляем статус каждую минуту
-        setInterval(updateWorkStatus, 60000);
-    });
+    // Обновляем статус каждую минуту
+    setInterval(updateWorkStatus, 60000);
 });
 
+// Функция инициализации слайдера услуг
+function initServicesSlider() {
+    const sliderTrack = document.querySelector('.services-slider-track');
+    const sliderContainer = document.querySelector('.services-slider-container');
+    const prevButton = document.querySelector('.slider-prev');
+    const nextButton = document.querySelector('.slider-next');
+    const paginationContainer = document.querySelector('.slider-pagination');
 
+    if (!sliderTrack || !sliderContainer || !prevButton || !nextButton || !paginationContainer) return;
+
+    // Получаем все карточки услуг
+    const cards = Array.from(sliderTrack.querySelectorAll('.service-card'));
+    if (cards.length === 0) return;
+
+    // Определяем количество видимых карточек в зависимости от ширины экрана
+    function getVisibleCards() {
+        if (window.innerWidth <= 768) {
+            return 1; // Мобильные устройства
+        } else if (window.innerWidth <= 1024) {
+            return 2; // Планшеты
+        } else {
+            return 3; // Десктоп
+        }
+    }
+
+    let visibleCards = getVisibleCards();
+    let currentIndex = 0;
+    let totalSlides = Math.ceil(cards.length / visibleCards);
+
+    // Создаем пагинацию
+    function createPagination() {
+        paginationContainer.innerHTML = '';
+        totalSlides = Math.ceil(cards.length / visibleCards);
+
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('pagination-dot');
+            if (i === currentIndex) dot.classList.add('active');
+
+            dot.addEventListener('click', () => {
+                goToSlide(i);
+            });
+
+            paginationContainer.appendChild(dot);
+        }
+    }
+
+    // Обновляем активную точку пагинации
+    function updatePagination() {
+        const dots = paginationContainer.querySelectorAll('.pagination-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+    }
+
+    // Выравниваем высоту карточек
+    function equalizeCardHeights() {
+        // Сбрасываем высоту всех карточек
+        cards.forEach(card => {
+            card.style.height = 'auto';
+        });
+
+        // Группируем карточки по слайдам
+        const slides = [];
+        for (let i = 0; i < cards.length; i += visibleCards) {
+            slides.push(cards.slice(i, i + visibleCards));
+        }
+
+        // Для каждого слайда находим максимальную высоту и применяем её ко всем карточкам в слайде
+        slides.forEach(slideCards => {
+            let maxHeight = 0;
+            slideCards.forEach(card => {
+                const height = card.offsetHeight;
+                if (height > maxHeight) {
+                    maxHeight = height;
+                }
+            });
+
+            slideCards.forEach(card => {
+                card.style.height = `${maxHeight}px`;
+            });
+        });
+    }
+
+    // Перемещаем слайдер к определенному индексу
+    function goToSlide(index) {
+        // Обеспечиваем бесконечную прокрутку
+        if (index < 0) {
+            index = totalSlides - 1;
+        } else if (index >= totalSlides) {
+            index = 0;
+        }
+
+        currentIndex = index;
+        const offset = -(currentIndex * 100);
+        sliderTrack.style.transform = `translateX(${offset}%)`;
+
+        updatePagination();
+    }
+
+    // Обработчики для кнопок
+    prevButton.addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+    });
+
+    nextButton.addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
+    });
+
+    // Устанавливаем начальную ширину карточек
+    cards.forEach(card => {
+        card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
+    });
+
+    createPagination();
+    equalizeCardHeights();
+    // Обработчик изменения размера окна
+    window.addEventListener('resize', () => {
+        const newVisibleCards = getVisibleCards();
+
+        if (newVisibleCards !== visibleCards) {
+            visibleCards = newVisibleCards;
+
+            // Пересчитываем ширину карточек
+            cards.forEach(card => {
+                card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
+            });
+
+            // Обновляем пагинацию и позицию слайдера
+            createPagination();
+            currentIndex = 0;
+            goToSlide(0);
+
+            // Перерасчет высоты карточек
+            setTimeout(equalizeCardHeights, 300);
+        }
+    });
+
+    // Инициализация слайдера
+    createPagination();
+    equalizeCardHeights();
+
+    // Добавляем поддержку свайпов для мобильных устройств
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    sliderContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    sliderContainer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const swipeThreshold = 50; // Минимальное расстояние для свайпа
+
+        if (touchStartX - touchEndX > swipeThreshold) {
+            // Свайп влево - следующий слайд
+            goToSlide(currentIndex + 1);
+        } else if (touchEndX - touchStartX > swipeThreshold) {
+            // Свайп вправо - предыдущий слайд
+            goToSlide(currentIndex - 1);
+        }
+    }
+}
