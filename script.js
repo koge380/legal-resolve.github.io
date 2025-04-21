@@ -653,3 +653,40 @@ function initServicesSlider() {
     // Инициализация слайдера
     goToSlide(0, false);
 }
+// Добавьте эту функцию в начало вашего скрипта
+function preloadSVGIcons() {
+    // Находим все SVG иконки
+    const icons = document.querySelectorAll('.service-icon svg');
+
+    // Создаем невидимый canvas для предварительного рендеринга
+    const canvas = document.createElement('canvas');
+    canvas.width = 50;
+    canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+
+    // Для каждой иконки создаем изображение и предварительно рендерим
+    icons.forEach(icon => {
+        // Создаем Data URL из SVG
+        const svgData = new XMLSerializer().serializeToString(icon);
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        // Создаем изображение и загружаем SVG
+        const img = new Image();
+        img.crossOrigin = "anonymous"; // Важно для предотвращения CORS-ошибок
+
+        img.onload = function () {
+            // Рендерим на canvas (это заставляет браузер кэшировать растеризованную версию)
+            ctx.clearRect(0, 0, 50, 50);
+            ctx.drawImage(img, 0, 0, 50, 50);
+
+            // Освобождаем URL
+            URL.revokeObjectURL(svgUrl);
+        };
+
+        img.src = svgUrl;
+    });
+}
+
+// Вызываем функцию после загрузки страницы
+document.addEventListener('DOMContentLoaded', preloadSVGIcons);
