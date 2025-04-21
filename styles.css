@@ -825,7 +825,7 @@ button {
 
 .services-slider-track {
     display: flex;
-    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: transform 0.3s ease-out;
     will-change: transform;
 }
 
@@ -841,8 +841,6 @@ button {
     transition: all var(--transition-normal);
     overflow: hidden;
     position: relative;
-    transform: translateZ(0);
-    backface-visibility: hidden;
 }
 
 .service-header {
@@ -862,23 +860,11 @@ button {
     border-radius: var(--radius-md);
     color: var(--color-accent);
     margin-bottom: 0.5rem;
-    position: relative;
-    overflow: hidden;
 }
-
-.service-icon img {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    filter: invert(65%) sepia(11%) saturate(1011%) hue-rotate(355deg) brightness(89%) contrast(86%);
-    transition: transform 0.3s ease;
-}
-
 
 .service-icon svg {
     width: 24px;
     height: 24px;
-    transform: translateZ(0);
 }
 
 .service-title {
