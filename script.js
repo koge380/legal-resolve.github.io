@@ -343,6 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Функция инициализации слайдера услуг
+// Функция инициализации слайдера услуг
 function initServicesSlider() {
     const sliderTrack = document.querySelector('.services-slider-track');
     const sliderContainer = document.querySelector('.services-slider-container');
@@ -370,6 +371,7 @@ function initServicesSlider() {
     let visibleCards = getVisibleCards();
     let currentIndex = 0;
     let totalSlides = Math.ceil(cards.length / visibleCards);
+    let isAnimating = false; // Флаг для предотвращения множественных анимаций
 
     // Создаем пагинацию
     function createPagination() {
@@ -382,7 +384,7 @@ function initServicesSlider() {
             if (i === currentIndex) dot.classList.add('active');
 
             dot.addEventListener('click', () => {
-                goToSlide(i);
+                if (!isAnimating) goToSlide(i);
             });
 
             paginationContainer.appendChild(dot);
@@ -426,8 +428,11 @@ function initServicesSlider() {
         });
     }
 
-    // Перемещаем слайдер к определенному индексу
+    // Перемещаем слайдер к определенному индексу с оптимизированной анимацией
     function goToSlide(index) {
+        if (isAnimating) return; // Предотвращаем множественные анимации
+        isAnimating = true;
+
         // Обеспечиваем бесконечную прокрутку
         if (index < 0) {
             index = totalSlides - 1;
@@ -436,19 +441,37 @@ function initServicesSlider() {
         }
 
         currentIndex = index;
-        const offset = currentIndex * 100;
-        sliderTrack.style.transform = `translateX(-${offset}%)`;
 
-        updatePagination();
+        // Используем transform для лучшей производительности
+        // и requestAnimationFrame для синхронизации с циклом отрисовки браузера
+        requestAnimationFrame(() => {
+            const offset = currentIndex * 100;
+            sliderTrack.style.transform = `translateX(-${offset}%)`;
+
+            // Сбрасываем флаг анимации после завершения перехода
+            const transitionEndHandler = () => {
+                isAnimating = false;
+                sliderTrack.removeEventListener('transitionend', transitionEndHandler);
+            };
+
+            sliderTrack.addEventListener('transitionend', transitionEndHandler);
+
+            // Страховка на случай, если событие transitionend не сработает
+            setTimeout(() => {
+                isAnimating = false;
+            }, 400); // Немного больше, чем длительность анимации
+
+            updatePagination();
+        });
     }
 
-    // Обработчики для кнопок
+    // Обработчики для кнопок с защитой от множественных нажатий
     prevButton.addEventListener('click', () => {
-        goToSlide(currentIndex - 1);
+        if (!isAnimating) goToSlide(currentIndex - 1);
     });
 
     nextButton.addEventListener('click', () => {
-        goToSlide(currentIndex + 1);
+        if (!isAnimating) goToSlide(currentIndex + 1);
     });
 
     // Устанавливаем начальную ширину карточек
@@ -456,92 +479,139 @@ function initServicesSlider() {
         card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
     });
 
+    // Оптимизируем стили для лучшей производительности
+    sliderTrack.style.willChange = 'transform'; // Подсказка браузеру об оптимизации
+    sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)'; // Более плавная кривая анимации
+
     createPagination();
     equalizeCardHeights();
-    // Обработчик изменения размера окна
+
+    // Обработчик изменения размера окна с дебаунсингом
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-        const newVisibleCards = getVisibleCards();
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const newVisibleCards = getVisibleCards();
 
-        if (newVisibleCards !== visibleCards) {
-            visibleCards = newVisibleCards;
+            if (newVisibleCards !== visibleCards) {
+                visibleCards = newVisibleCards;
 
-            // Пересчитываем ширину карточек
-            cards.forEach(card => {
-                card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
-            });
+                // Пересчитываем ширину карточек
+                cards.forEach(card => {
+                    card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
+                });
 
-            // Обновляем пагинацию и позицию слайдера
-            createPagination();
-            currentIndex = 0;
-            goToSlide(0);
+                // Обновляем пагинацию и позицию слайдера
+                createPagination();
+                currentIndex = 0;
 
-            // Перерасчет высоты карточек
-            setTimeout(equalizeCardHeights, 300);
-        }
+                // Отключаем анимацию при ресайзе
+                sliderTrack.style.transition = 'none';
+                goToSlide(0);
+
+                // Возвращаем анимацию после перерисовки
+                requestAnimationFrame(() => {
+                    sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+                });
+
+                // Перерасчет высоты карточек
+                setTimeout(equalizeCardHeights, 300);
+            }
+        }, 150); // Дебаунсинг для предотвращения частых вызовов при ресайзе
     });
 
-    // Инициализация слайдера
-    createPagination();
-    equalizeCardHeights();
-
-    // Добавляем поддержку свайпов для мобильных устройств с анимацией
+    // Оптимизированная поддержка свайпов для мобильных устройств
     let touchStartX = 0;
-    let touchEndX = 0;
+    let touchStartY = 0; // Добавляем для определения направления свайпа
     let touchMoveX = 0;
     let initialOffset = 0;
     let isDragging = false;
+    let startTime = 0; // Для определения скорости свайпа
+    let preventVerticalScroll = false; // Флаг для предотвращения вертикальной прокрутки
 
-    // Добавляем плавность анимации для слайдера
-    sliderTrack.style.transition = 'transform 0.3s ease-out';
-
+    // Используем passive: true для улучшения производительности
     sliderContainer.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
+        if (isAnimating) return;
+
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY; // Запоминаем начальную Y-координату
         initialOffset = currentIndex * 100;
         isDragging = true;
+        startTime = Date.now();
 
         // Отключаем переход на время свайпа для мгновенной реакции
         sliderTrack.style.transition = 'none';
-    }, { passive: true });
 
-    // Добавляем обработчик движения пальца
+        // Останавливаем инерционную прокрутку, если она есть
+        e.preventDefault();
+    }, { passive: false });
+
+    // Оптимизированный обработчик движения пальца
     sliderContainer.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
 
-        touchMoveX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchMoveX;
-        const swipePercent = (diff / sliderContainer.offsetWidth) * 100;
+        const touchMoveX = e.touches[0].clientX;
+        const touchMoveY = e.touches[0].clientY;
 
-        // Ограничиваем смещение, чтобы не уйти слишком далеко за пределы
-        const maxOffset = (totalSlides - 1) * 100;
-        let newOffset = initialOffset + swipePercent;
+        // Определяем направление свайпа
+        const deltaX = touchStartX - touchMoveX;
+        const deltaY = touchStartY - touchMoveY;
 
-        // Добавляем сопротивление при попытке свайпнуть за пределы
-        if (newOffset < 0) {
-            newOffset = newOffset / 3; // Сильное сопротивление при свайпе влево от первого слайда
-        } else if (newOffset > maxOffset) {
-            newOffset = maxOffset + (newOffset - maxOffset) / 3; // Сопротивление при свайпе вправо от последнего слайда
+        // Если свайп начался горизонтально, предотвращаем вертикальную прокрутку
+        if (!preventVerticalScroll && Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+            preventVerticalScroll = true;
         }
 
-        // Применяем смещение к слайдеру
-        sliderTrack.style.transform = `translateX(-${newOffset}%)`;
-    }, { passive: true });
+        if (preventVerticalScroll) {
+            e.preventDefault(); // Предотвращаем прокрутку страницы
 
+            const containerWidth = sliderContainer.offsetWidth;
+            const swipePercent = (deltaX / containerWidth) * 100;
+
+            // Ограничиваем смещение с эффектом резинки
+            const maxOffset = (totalSlides - 1) * 100;
+            let newOffset = initialOffset + swipePercent;
+
+            // Добавляем сопротивление при попытке свайпнуть за пределы
+            if (newOffset < 0) {
+                newOffset = newOffset / 3; // Сильное сопротивление при свайпе влево от первого слайда
+            } else if (newOffset > maxOffset) {
+                newOffset = maxOffset + (newOffset - maxOffset) / 3; // Сопротивление при свайпе вправо от последнего слайда
+            }
+
+            // Используем requestAnimationFrame для оптимизации производительности
+            requestAnimationFrame(() => {
+                sliderTrack.style.transform = `translateX(-${newOffset}%)`;
+            });
+        }
+    }, { passive: false });
+
+    // Оптимизированный обработчик окончания свайпа
     sliderContainer.addEventListener('touchend', (e) => {
         if (!isDragging) return;
 
-        touchEndX = e.changedTouches[0].screenX;
         isDragging = false;
+        preventVerticalScroll = false;
 
         // Возвращаем плавную анимацию
-        sliderTrack.style.transition = 'transform 0.3s ease-out';
+        sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)';
 
-        // Вычисляем, насколько далеко был свайп
-        const diff = touchStartX - touchEndX;
-        const swipeThreshold = sliderContainer.offsetWidth * 0.2; // 20% ширины контейнера
+        const touchEndX = e.changedTouches[0].clientX;
+        const deltaX = touchStartX - touchEndX;
+        const elapsedTime = Date.now() - startTime;
 
-        if (Math.abs(diff) > swipeThreshold) {
-            // Свайп был достаточно сильным
-            if (diff > 0) {
+        // Вычисляем скорость свайпа (пикселей в миллисекунду)
+        const velocity = Math.abs(deltaX) / elapsedTime;
+
+        // Порог для определения быстрого свайпа
+        const isQuickSwipe = velocity > 0.5;
+
+        // Порог для определения достаточного смещения (20% ширины контейнера)
+        const swipeThreshold = sliderContainer.offsetWidth * 0.2;
+
+        if (Math.abs(deltaX) > swipeThreshold || isQuickSwipe) {
+            // Свайп был достаточно сильным или быстрым
+            if (deltaX > 0) {
                 // Свайп влево - следующий слайд
                 goToSlide(currentIndex + 1);
             } else {
@@ -554,12 +624,16 @@ function initServicesSlider() {
         }
     }, { passive: true });
 
-    // Добавляем обработчик для отмены свайпа при уходе пальца за пределы контейнера
+    // Обработчик для отмены свайпа
     sliderContainer.addEventListener('touchcancel', () => {
         if (!isDragging) return;
 
         isDragging = false;
-        sliderTrack.style.transition = 'transform 0.3s ease-out';
+        preventVerticalScroll = false;
+        sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)';
         goToSlide(currentIndex);
     }, { passive: true });
+
+    // Инициализация слайдера
+    goToSlide(0);
 }
