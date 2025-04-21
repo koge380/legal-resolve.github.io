@@ -342,7 +342,6 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(updateWorkStatus, 60000);
 });
 
-// Функция инициализации слайдера услуг
 function initServicesSlider() {
     const sliderTrack = document.querySelector('.services-slider-track');
     const sliderContainer = document.querySelector('.services-slider-container');
@@ -356,35 +355,17 @@ function initServicesSlider() {
     const cards = Array.from(sliderTrack.querySelectorAll('.service-card'));
     if (cards.length === 0) return;
 
-    // Применяем GPU-ускорение к карточкам
-    cards.forEach(card => {
-        // Включаем аппаратное ускорение для всех карточек
-        card.style.transform = 'translateZ(0)';
-        card.style.backfaceVisibility = 'hidden';
-
-        // Предварительно растеризуем SVG иконки для улучшения производительности
-        const icons = card.querySelectorAll('svg');
-        icons.forEach(icon => {
-            icon.style.transform = 'translateZ(0)';
-        });
-    });
-
     // Определяем количество видимых карточек в зависимости от ширины экрана
     function getVisibleCards() {
-        if (window.innerWidth <= 768) {
-            return 1; // Мобильные устройства
-        } else if (window.innerWidth <= 1024) {
-            return 2; // Планшеты
-        } else {
-            return 3; // Десктоп
-        }
+        if (window.innerWidth <= 768) return 1; // Мобильные устройства
+        if (window.innerWidth <= 1024) return 2; // Планшеты
+        return 3; // Десктоп
     }
 
     let visibleCards = getVisibleCards();
     let currentIndex = 0;
     let totalSlides = Math.ceil(cards.length / visibleCards);
     let isAnimating = false;
-    let isTouchActive = false;
 
     // Создаем пагинацию
     function createPagination() {
@@ -395,11 +376,9 @@ function initServicesSlider() {
             const dot = document.createElement('div');
             dot.classList.add('pagination-dot');
             if (i === currentIndex) dot.classList.add('active');
-
             dot.addEventListener('click', () => {
                 if (!isAnimating) goToSlide(i);
             });
-
             paginationContainer.appendChild(dot);
         }
     }
@@ -412,71 +391,32 @@ function initServicesSlider() {
         });
     }
 
-    // Выравниваем высоту карточек
-    function equalizeCardHeights() {
-        // Сбрасываем высоту всех карточек
-        cards.forEach(card => {
-            card.style.height = 'auto';
-        });
-
-        // Группируем карточки по слайдам
-        const slides = [];
-        for (let i = 0; i < cards.length; i += visibleCards) {
-            slides.push(cards.slice(i, i + visibleCards));
-        }
-
-        // Для каждого слайда находим максимальную высоту и применяем её ко всем карточкам в слайде
-        slides.forEach(slideCards => {
-            let maxHeight = 0;
-            slideCards.forEach(card => {
-                const height = card.offsetHeight;
-                if (height > maxHeight) {
-                    maxHeight = height;
-                }
-            });
-
-            slideCards.forEach(card => {
-                card.style.height = `${maxHeight}px`;
-            });
-        });
-    }
-
-    // Перемещаем слайдер к определенному индексу с оптимизированной анимацией
+    // Перемещаем слайдер к определенному индексу
     function goToSlide(index, useTransition = true) {
         if (isAnimating && useTransition) return;
 
         // Обеспечиваем бесконечную прокрутку
-        if (index < 0) {
-            index = totalSlides - 1;
-        } else if (index >= totalSlides) {
-            index = 0;
-        }
+        if (index < 0) index = totalSlides - 1;
+        else if (index >= totalSlides) index = 0;
 
         currentIndex = index;
 
+        // Управление анимацией
         if (useTransition) {
             isAnimating = true;
-            sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            sliderTrack.style.transition = 'transform 0.3s ease';
         } else {
             sliderTrack.style.transition = 'none';
         }
 
-        // Используем transform для лучшей производительности
-        const offset = currentIndex * 100;
+        // Вычисляем смещение и применяем трансформацию
+        const offset = currentIndex * (100 / visibleCards) * visibleCards;
 
-        // Используем translateX с translateZ(0) для включения GPU-ускорения
-        sliderTrack.style.transform = `translate3d(-${offset}%, 0, 0)`;
+        // Используем простой translateX для максимальной совместимости
+        sliderTrack.style.transform = `translateX(-${offset}%)`;
 
         if (useTransition) {
             // Сбрасываем флаг анимации после завершения перехода
-            const transitionEndHandler = () => {
-                isAnimating = false;
-                sliderTrack.removeEventListener('transitionend', transitionEndHandler);
-            };
-
-            sliderTrack.addEventListener('transitionend', transitionEndHandler);
-
-            // Страховка на случай, если событие transitionend не сработает
             setTimeout(() => {
                 isAnimating = false;
             }, 350);
@@ -494,199 +434,73 @@ function initServicesSlider() {
         if (!isAnimating) goToSlide(currentIndex + 1);
     });
 
-    // Устанавливаем начальную ширину карточек и применяем GPU-ускорение
+    // Устанавливаем начальную ширину карточек
     cards.forEach(card => {
         card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
     });
 
-    // Оптимизируем стили для лучшей производительности
-    sliderTrack.style.willChange = 'transform';
-    sliderTrack.style.transform = 'translate3d(0, 0, 0)';
-    sliderTrack.style.backfaceVisibility = 'hidden';
-    sliderTrack.style.perspective = '1000px';
-
     // Инициализация
     createPagination();
-    equalizeCardHeights();
 
-    // Обработчик изменения размера окна с дебаунсингом
+    // Обработчик изменения размера окна
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
             const newVisibleCards = getVisibleCards();
-
             if (newVisibleCards !== visibleCards) {
                 visibleCards = newVisibleCards;
-
-                // Пересчитываем ширину карточек
                 cards.forEach(card => {
                     card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
                 });
-
-                // Обновляем пагинацию и позицию слайдера
                 createPagination();
                 currentIndex = 0;
                 goToSlide(0, false);
-
-                // Перерасчет высоты карточек
-                setTimeout(equalizeCardHeights, 300);
             }
         }, 150);
     });
 
-    // Оптимизированная поддержка свайпов для мобильных устройств
+    // Упрощенная поддержка свайпов для мобильных устройств
     let touchStartX = 0;
+    let touchEndX = 0;
     let touchStartY = 0;
-    let initialOffset = 0;
-    let startTime = 0;
-    let lastTouchX = 0;
-    let isScrolling = false;
+    let touchEndY = 0;
 
-    // Функция для обработки начала касания
-    function handleTouchStart(e) {
+    sliderContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    sliderContainer.addEventListener('touchmove', (e) => {
+        // Простая проверка на вертикальный скролл
+        if (Math.abs(touchStartY - e.touches[0].clientY) >
+            Math.abs(touchStartX - e.touches[0].clientX)) {
+            return;
+        }
+        e.preventDefault();
+    }, { passive: false });
+
+    sliderContainer.addEventListener('touchend', (e) => {
         if (isAnimating) return;
 
-        const touch = e.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-        lastTouchX = touchStartX;
-        initialOffset = currentIndex * 100;
-        startTime = Date.now();
-        isScrolling = false;
-        isTouchActive = true;
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
 
-        // Отключаем переход на время свайпа
-        sliderTrack.style.transition = 'none';
-    }
-
-    // Функция для обработки движения пальца
-    function handleTouchMove(e) {
-        if (!isTouchActive) return;
-
-        const touch = e.touches[0];
-        const currentX = touch.clientX;
-        const currentY = touch.clientY;
-
-        // Определяем направление движения
-        const deltaX = touchStartX - currentX;
-        const deltaY = touchStartY - currentY;
-
-        // Если это вертикальная прокрутка, не обрабатываем свайп
-        if (!isScrolling) {
-            isScrolling = Math.abs(deltaY) > Math.abs(deltaX);
+        // Если вертикальное движение больше горизонтального, это скролл
+        if (Math.abs(touchStartY - touchEndY) > Math.abs(touchStartX - touchEndX)) {
+            return;
         }
 
-        if (isScrolling) return;
-
-        // Предотвращаем прокрутку страницы при горизонтальном свайпе
-        e.preventDefault();
-
-        lastTouchX = currentX;
-
-        const containerWidth = sliderContainer.offsetWidth;
-        const swipePercent = (deltaX / containerWidth) * 100;
-
-        // Ограничиваем смещение с эффектом резинки
-        const maxOffset = (totalSlides - 1) * 100;
-        let newOffset = initialOffset + swipePercent;
-
-        // Добавляем сопротивление при попытке свайпнуть за пределы
-        if (newOffset < 0) {
-            newOffset = newOffset / 3;
-        } else if (newOffset > maxOffset) {
-            newOffset = maxOffset + (newOffset - maxOffset) / 3;
+        const swipeThreshold = 50;
+        if (touchStartX - touchEndX > swipeThreshold) {
+            // Свайп влево - следующий слайд
+            goToSlide(currentIndex + 1);
+        } else if (touchEndX - touchStartX > swipeThreshold) {
+            // Свайп вправо - предыдущий слайд
+            goToSlide(currentIndex - 1);
         }
-
-        // Применяем трансформацию с GPU-ускорением
-        sliderTrack.style.transform = `translate3d(-${newOffset}%, 0, 0)`;
-    }
-
-    // Функция для обработки окончания касания
-    function handleTouchEnd(e) {
-        if (!isTouchActive) return;
-
-        isTouchActive = false;
-
-        if (isScrolling) return;
-
-        // Возвращаем плавную анимацию
-        sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-
-        const touch = e.changedTouches[0];
-        const deltaX = touchStartX - touch.clientX;
-        const elapsedTime = Date.now() - startTime;
-
-        // Вычисляем скорость свайпа
-        const velocity = Math.abs(deltaX) / elapsedTime;
-        const isQuickSwipe = velocity > 0.3;
-
-        // Порог для определения достаточного смещения
-        const swipeThreshold = sliderContainer.offsetWidth * 0.15;
-
-        if (Math.abs(deltaX) > swipeThreshold || isQuickSwipe) {
-            if (deltaX > 0) {
-                goToSlide(currentIndex + 1);
-            } else {
-                goToSlide(currentIndex - 1);
-            }
-        } else {
-            goToSlide(currentIndex);
-        }
-    }
-
-    // Функция для отмены свайпа
-    function handleTouchCancel() {
-        if (!isTouchActive) return;
-
-        isTouchActive = false;
-        sliderTrack.style.transition = 'transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1)';
-        goToSlide(currentIndex);
-    }
-
-    // Добавляем обработчики событий с оптимизацией для мобильных устройств
-    sliderContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-    sliderContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
-    sliderContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
-    sliderContainer.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+    }, { passive: true });
 
     // Инициализация слайдера
     goToSlide(0, false);
 }
-// Добавьте эту функцию в начало вашего скрипта
-function preloadSVGIcons() {
-    // Находим все SVG иконки
-    const icons = document.querySelectorAll('.service-icon svg');
-
-    // Создаем невидимый canvas для предварительного рендеринга
-    const canvas = document.createElement('canvas');
-    canvas.width = 50;
-    canvas.height = 50;
-    const ctx = canvas.getContext('2d');
-
-    // Для каждой иконки создаем изображение и предварительно рендерим
-    icons.forEach(icon => {
-        // Создаем Data URL из SVG
-        const svgData = new XMLSerializer().serializeToString(icon);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-
-        // Создаем изображение и загружаем SVG
-        const img = new Image();
-        img.crossOrigin = "anonymous"; // Важно для предотвращения CORS-ошибок
-
-        img.onload = function () {
-            // Рендерим на canvas (это заставляет браузер кэшировать растеризованную версию)
-            ctx.clearRect(0, 0, 50, 50);
-            ctx.drawImage(img, 0, 0, 50, 50);
-
-            // Освобождаем URL
-            URL.revokeObjectURL(svgUrl);
-        };
-
-        img.src = svgUrl;
-    });
-}
-
-// Вызываем функцию после загрузки страницы
-document.addEventListener('DOMContentLoaded', preloadSVGIcons);
