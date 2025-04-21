@@ -825,11 +825,8 @@ button {
 
 .services-slider-track {
     display: flex;
-    transition: transform 0.3s ease-out;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     will-change: transform;
-    perspective: 1000px;
 }
 
 /* Стили для карточек услуг */
@@ -865,7 +862,18 @@ button {
     border-radius: var(--radius-md);
     color: var(--color-accent);
     margin-bottom: 0.5rem;
+    position: relative;
+    overflow: hidden;
 }
+
+.service-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    filter: invert(65%) sepia(11%) saturate(1011%) hue-rotate(355deg) brightness(89%) contrast(86%);
+    transition: transform 0.3s ease;
+}
+
 
 .service-icon svg {
     width: 24px;
