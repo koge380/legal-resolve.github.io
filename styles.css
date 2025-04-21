@@ -826,6 +826,7 @@ button {
 .services-slider-track {
     display: flex;
     transition: transform 0.5s ease;
+    will-change: transform;
 }
 
 /* Стили для карточек услуг */
