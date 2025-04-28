@@ -492,7 +492,7 @@ function initServicesSlider() {
     let isDragging = false;
 
     // Добавляем плавность анимации для слайдера
-    sliderTrack.style.transition = 'transform 0.3s ease-out';
+    sliderTrack.style.transition = 'transform 0.5s ease-out';
 
     sliderContainer.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
@@ -533,7 +533,7 @@ function initServicesSlider() {
         isDragging = false;
 
         // Возвращаем плавную анимацию
-        sliderTrack.style.transition = 'transform 0.3s ease-out';
+        sliderTrack.style.transition = 'transform 0.5s ease-out';
 
         // Вычисляем, насколько далеко был свайп
         const diff = touchStartX - touchEndX;
@@ -559,7 +559,7 @@ function initServicesSlider() {
         if (!isDragging) return;
 
         isDragging = false;
-        sliderTrack.style.transition = 'transform 0.3s ease-out';
+        sliderTrack.style.transition = 'transform 0.5s ease-out';
         goToSlide(currentIndex);
     }, { passive: true });
 }
