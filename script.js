@@ -149,6 +149,88 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    // Form validation для модального окна
+    const modalContactForm = document.getElementById('modalContactForm');
+    if (modalContactForm) {
+        modalContactForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('modalName');
+            const phoneInput = document.getElementById('modalPhone');
+            const messageInput = document.getElementById('modalMessage');
+            const consentInput = document.getElementById('modalConsent');
+
+            let isValid = true;
+
+            if (!nameInput.value.trim()) {
+                nameInput.style.borderColor = 'var(--color-accent)';
+                isValid = false;
+            } else {
+                nameInput.style.borderColor = '';
+            }
+
+            if (!phoneInput.value.trim()) {
+                phoneInput.style.borderColor = 'var(--color-accent)';
+                isValid = false;
+            } else {
+                phoneInput.style.borderColor = '';
+            }
+
+            if (!consentInput.checked) {
+                consentInput.style.outline = '2px solid var(--color-accent)';
+                isValid = false;
+            } else {
+                consentInput.style.outline = '';
+            }
+
+            if (isValid) {
+                alert('Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
+                modalContactForm.reset();
+            }
+        });
+    }
+
+    // Phone input mask для модального окна
+    const modalPhoneInput = document.getElementById('modalPhone');
+    if (modalPhoneInput) {
+        modalPhoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            if (value.length > 0) {
+                if (value[0] === '7') {
+                    value = value;
+                } else if (value[0] === '8') {
+                    value = '7' + value.substring(1);
+                } else {
+                    value = '7' + value;
+                }
+
+                let formattedValue = '+';
+
+                if (value.length > 0) {
+                    formattedValue += value.substring(0, 1);
+                }
+
+                if (value.length > 1) {
+                    formattedValue += ' (' + value.substring(1, 4);
+                }
+
+                if (value.length > 4) {
+                    formattedValue += ') ' + value.substring(4, 7);
+                }
+
+                if (value.length > 7) {
+                    formattedValue += '-' + value.substring(7, 9);
+                }
+
+                if (value.length > 9) {
+                    formattedValue += '-' + value.substring(9, 11);
+                }
+
+                e.target.value = formattedValue;
+            }
+        });
+    }
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -563,3 +645,63 @@ function initServicesSlider() {
         goToSlide(currentIndex);
     }, { passive: true });
 }
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Модальное окно обратной связи
+    const contactModal = document.getElementById('contact-modal');
+    const contactModalClose = document.querySelector('.contact-modal-close');
+    const contactModalOverlay = document.querySelector('.contact-modal-overlay');
+
+    // Открытие по всем ссылкам href="#contacts"
+    document.querySelectorAll('[data-modal="contact-modal"]').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (contactModal) {
+                contactModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    function getScrollbarWidth() {
+        return window.innerWidth - document.documentElement.clientWidth;
+    }
+
+    function openContactModal() {
+        if (contactModal) {
+            contactModal.classList.add('active');
+            const scrollBarWidth = getScrollbarWidth();
+            document.body.style.overflow = 'hidden';
+            document.body.style.paddingRight = scrollBarWidth + 'px';
+        }
+    }
+
+    function closeContactModal() {
+        if (contactModal) {
+            contactModal.classList.remove('active');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }
+    }
+    // Закрытие по кнопке или overlay
+    function closeContactModal() {
+        if (contactModal) {
+            contactModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (contactModalClose) {
+        contactModalClose.addEventListener('click', closeContactModal);
+    }
+    if (contactModalOverlay) {
+        contactModalOverlay.addEventListener('click', closeContactModal);
+    }
+
+    // ESC для закрытия
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && contactModal && contactModal.classList.contains('active')) {
+            closeContactModal();
+        }
+    });
+});
