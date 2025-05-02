@@ -33,7 +33,7 @@
 }
 
 .breadcrumbs-link:hover {
-    color: var(--color-accent, #B3946F);
+    color: var(--color-accent, #b3946f);
     opacity: 0.9;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .breadcrumbs-current {
-    color: var(--color-accent, #B3946F);
+    color: var(--color-accent, #b3946f);
     font-weight: 500;
 }
 
@@ -80,7 +80,6 @@
     position: relative;
     border-left: 2px solid var(--color-accent);
 }
-
 
 .eligibility-title {
     font-size: 1.25rem;
@@ -382,10 +381,17 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: grid;
+    grid-template-rows: auto 0fr;
+    transition: grid-template-rows 0.5s ease;
 }
 
 .accordion-item:hover {
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.accordion-item.active {
+    grid-template-rows: auto 1fr;
 }
 
 .accordion-header {
@@ -450,13 +456,7 @@
 }
 
 .accordion-content {
-    max-height: 0;
     overflow: hidden;
-    transition: max-height 0.5s ease;
-}
-.accordion-item.active .accordion-content {
-    max-height: 2000px;
-    /* Достаточно большое значение для любого контента */
 }
 
 .tariff-details-inner {
@@ -508,26 +508,19 @@
 
 /* CSS для выделенного блока с кнопкой */
 .tariff-cta {
-    margin-top: 30px;
-    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease;
-    /* transition-delay: 0.2s; */
-    overflow: hidden;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+
 }
 
 .accordion-item:not(.active) .tariff-cta {
     opacity: 0;
     transform: translateY(20px);
-    max-height: 0;
-    margin: 0;
-    padding: 0;
 }
 
 /* Класс для активного состояния */
 .accordion-item.active .tariff-cta {
     opacity: 1;
     transform: translateY(0);
-    max-height: 200px;
-    /* Достаточно для содержимого */
     margin-top: 30px;
 }
 
@@ -698,7 +691,6 @@
     color: var(--color-text-light);
     line-height: 1.6;
 }
-
 
 /* Адаптивность */
 @media (max-width: 1200px) {
