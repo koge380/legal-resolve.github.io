@@ -1,138 +1,93 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const accordionItems = document.querySelectorAll(".accordion-item");
+  const accordionItems = document.querySelectorAll(".accordion-item")
 
-  // Функция для открытия аккордеона
-  function openAccordion(item, withAnimation = true) {
-    // Закрываем все аккордеоны
-    accordionItems.forEach((otherItem) => {
-      if (otherItem !== item) {
-        otherItem.classList.remove("active");
-        otherItem.querySelector(".accordion-content").style.maxHeight = "0";
-      }
-    });
+  // Функция для открытия/закрытия аккордеона
+  function toggleAccordion(item) {
+    const isActive = item.classList.contains("active")
+    const content = item.querySelector(".accordion-content")
 
-    // Открываем выбранный аккордеон
-    const content = item.querySelector(".accordion-content");
-    item.classList.add("active");
+    // Если аккордеон закрыт и его нужно открыть
+    if (!isActive) {
+      // Сначала закрываем все другие аккордеоны
+      accordionItems.forEach((otherItem) => {
+        if (otherItem !== item && otherItem.classList.contains("active")) {
+          const otherContent = otherItem.querySelector(".accordion-content")
+          otherItem.classList.remove("active")
 
-    if (withAnimation) {
-      // С анимацией (стандартное поведение)
-      content.style.maxHeight = content.scrollHeight + "px";
+          // Анимация закрытия для других аккордеонов
+          otherContent.style.maxHeight = "0"
+          otherContent.style.opacity = "0"
+          otherContent.style.transform = "translateY(-10px)"
+        }
+      })
+
+      // Затем открываем текущий аккордеон
+      item.classList.add("active")
+
+      // Устанавливаем начальное состояние для анимации
+      content.style.display = "block"
+      content.style.maxHeight = "0"
+      content.style.opacity = "0"
+      content.style.transform = "translateY(-10px)"
+
+      // Запускаем анимацию открытия после небольшой задержки
+      setTimeout(() => {
+        content.style.maxHeight = content.scrollHeight + "px"
+        content.style.opacity = "1"
+        content.style.transform = "translateY(0)"
+      }, 10)
     } else {
-      // Без анимации (мгновенное открытие)
-      content.style.transition = "none";
-      content.style.maxHeight = content.scrollHeight + "px";
+      // Закрываем текущий аккордеон
+      item.classList.remove("active")
 
-      // Возвращаем анимацию после короткой задержки
-      setTimeout(() => {
-        content.style.transition = "";
-      }, 50);
+      // Анимация закрытия
+      content.style.maxHeight = "0"
+      content.style.opacity = "0"
+      content.style.transform = "translateY(-10px)"
     }
-  }
-
-  // Функция для закрытия всех аккордеонов без анимации
-  function closeAllAccordions() {
-    accordionItems.forEach((item) => {
-      const content = item.querySelector(".accordion-content");
-      item.classList.remove("active");
-      content.style.transition = "none";
-      content.style.maxHeight = "0";
-
-      // Возвращаем анимацию после короткой задержки
-      setTimeout(() => {
-        content.style.transition = "";
-      }, 50);
-    });
-  }
-
-  // Функция для проверки, открыт ли хотя бы один аккордеон
-  function isAnyAccordionOpen() {
-    return Array.from(accordionItems).some(item => item.classList.contains("active"));
   }
 
   // Добавляем обработчик события для каждого заголовка аккордеона
   accordionItems.forEach((item) => {
-    const header = item.querySelector(".accordion-header");
-    const content = item.querySelector(".accordion-content");
+    const header = item.querySelector(".accordion-header")
 
-    // Обработчик клика на весь заголовок
     header.addEventListener("click", () => {
-      // Проверяем, активен ли текущий элемент
-      const isActive = item.classList.contains("active");
-
-      if (isActive) {
-        // Закрываем текущий аккордеон
-        item.classList.remove("active");
-        content.style.maxHeight = "0";
-      } else {
-        // Открываем текущий аккордеон с анимацией
-        openAccordion(item, true);
-      }
-    });
-  });
+      toggleAccordion(item)
+    })
+  })
 
   // Обработчик для кнопок "Подробнее"
-  const moreLinks = document.querySelectorAll(".service-more-link");
+  const moreLinks = document.querySelectorAll(".service-more-link")
 
-  moreLinks.forEach(link => {
+  moreLinks.forEach((link) => {
     link.addEventListener("click", function (e) {
-      e.preventDefault(); // Предотвращаем стандартное поведение ссылки
+      e.preventDefault()
 
-      // Получаем ID аккордеона из атрибута href ссылки
-      const targetId = this.getAttribute("href");
-      const targetAccordion = document.querySelector(targetId);
+      const targetId = this.getAttribute("href")
+      const targetAccordion = document.querySelector(targetId)
 
       if (targetAccordion) {
-        // Определяем высоту фиксированного хедера (если есть)
-        const header = document.querySelector('.header');
-        const headerOffset = header ? header.offsetHeight : 0;
+        // Определяем высоту фиксированного хедера
+        const header = document.querySelector(".header")
+        const headerOffset = header ? header.offsetHeight : 0
 
-        // Проверяем, открыт ли хотя бы один аккордеон
-        if (isAnyAccordionOpen()) {
-          // Если открыт хотя бы один аккордеон, закрываем все без анимации
-          closeAllAccordions();
-
-          // Затем открываем нужный аккордеон без анимации
-          setTimeout(() => {
-            openAccordion(targetAccordion, false);
-
-            // После открытия аккордеона прокручиваем к нему
-            setTimeout(() => {
-              // Получаем позицию аккордеона
-              const accordionRect = targetAccordion.getBoundingClientRect();
-              const absoluteAccordionTop = accordionRect.top + window.pageYOffset;
-
-              // Вычисляем позицию для прокрутки с учетом отступа
-              const scrollPosition = absoluteAccordionTop - headerOffset - 20;
-
-              // Прокручиваем страницу к вычисленной позиции
-              window.scrollTo({
-                top: scrollPosition,
-                behavior: 'smooth'
-              });
-            }, 50);
-          }, 50);
-        } else {
-          // Если не открыт ни один аккордеон, просто открываем нужный без анимации
-          openAccordion(targetAccordion, false);
-
-          // После открытия аккордеона прокручиваем к нему
-          setTimeout(() => {
-            // Получаем позицию аккордеона
-            const accordionRect = targetAccordion.getBoundingClientRect();
-            const absoluteAccordionTop = accordionRect.top + window.pageYOffset;
-
-            // Вычисляем позицию для прокрутки с учетом отступа
-            const scrollPosition = absoluteAccordionTop - headerOffset - 20;
-
-            // Прокручиваем страницу к вычисленной позиции
-            window.scrollTo({
-              top: scrollPosition,
-              behavior: 'smooth'
-            });
-          }, 50);
+        // Открываем аккордеон
+        if (!targetAccordion.classList.contains("active")) {
+          toggleAccordion(targetAccordion)
         }
+
+        // Прокручиваем к аккордеону после небольшой задержки
+        setTimeout(() => {
+          const accordionRect = targetAccordion.getBoundingClientRect()
+          const absoluteAccordionTop = accordionRect.top + window.pageYOffset
+          const scrollPosition = absoluteAccordionTop - headerOffset - 20
+
+          window.scrollTo({
+            top: scrollPosition,
+            behavior: "smooth",
+          })
+        }, 300) // Задержка для завершения анимации открытия
       }
-    });
-  });
-});
+    })
+  })
+})
