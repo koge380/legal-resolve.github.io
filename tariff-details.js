@@ -1,173 +1,138 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Проверяем, загружен ли GSAP
-  if (typeof gsap === "undefined") {
-    console.error("GSAP не загружен. Пожалуйста, добавьте библиотеку GSAP.")
-    return
+  const accordionItems = document.querySelectorAll(".accordion-item");
+
+  // Функция для открытия аккордеона
+  function openAccordion(item, withAnimation = true) {
+    // Закрываем все аккордеоны
+    accordionItems.forEach((otherItem) => {
+      if (otherItem !== item) {
+        otherItem.classList.remove("active");
+        otherItem.querySelector(".accordion-content").style.maxHeight = "0";
+      }
+    });
+
+    // Открываем выбранный аккордеон
+    const content = item.querySelector(".accordion-content");
+    item.classList.add("active");
+
+    if (withAnimation) {
+      // С анимацией (стандартное поведение)
+      content.style.maxHeight = content.scrollHeight + "px";
+    } else {
+      // Без анимации (мгновенное открытие)
+      content.style.transition = "none";
+      content.style.maxHeight = content.scrollHeight + "px";
+
+      // Возвращаем анимацию после короткой задержки
+      setTimeout(() => {
+        content.style.transition = "";
+      }, 50);
+    }
   }
 
-  const accordionItems = document.querySelectorAll(".accordion-item")
+  // Функция для закрытия всех аккордеонов без анимации
+  function closeAllAccordions() {
+    accordionItems.forEach((item) => {
+      const content = item.querySelector(".accordion-content");
+      item.classList.remove("active");
+      content.style.transition = "none";
+      content.style.maxHeight = "0";
 
-  // Подготавливаем все аккордеоны
-  accordionItems.forEach((item) => {
-    const content = item.querySelector(".accordion-content")
-    const inner = item.querySelector(".tariff-details-inner")
+      // Возвращаем анимацию после короткой задержки
+      setTimeout(() => {
+        content.style.transition = "";
+      }, 50);
+    });
+  }
 
-    // Устанавливаем начальное состояние
-    gsap.set(content, {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-      display: "none",
-    })
-
-    // Измеряем высоту содержимого и сохраняем её как атрибут
-    if (inner) {
-      // Временно делаем видимым для измерения
-      gsap.set(content, { display: "block", visibility: "hidden", height: "auto" })
-      const height = inner.offsetHeight
-      // Возвращаем в исходное состояние
-      gsap.set(content, { display: "none", visibility: "visible", height: 0 })
-
-      // Сохраняем высоту как атрибут
-      content.setAttribute("data-height", height)
-    }
-  })
-
-  // Функция для открытия/закрытия аккордеона
-  function toggleAccordion(item) {
-    const isActive = item.classList.contains("active")
-    const content = item.querySelector(".accordion-content")
-    const height = Number.parseInt(content.getAttribute("data-height") || 0)
-
-    // Если аккордеон закрыт и его нужно открыть
-    if (!isActive) {
-      // Сначала закрываем все другие аккордеоны
-      accordionItems.forEach((otherItem) => {
-        if (otherItem !== item && otherItem.classList.contains("active")) {
-          const otherContent = otherItem.querySelector(".accordion-content")
-          otherItem.classList.remove("active")
-
-          // Анимация закрытия с GSAP
-          gsap.to(otherContent, {
-            height: 0,
-            opacity: 0,
-            duration: 0.4,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set(otherContent, { display: "none" })
-            },
-          })
-        }
-      })
-
-      // Открываем текущий аккордеон
-      item.classList.add("active")
-
-      // Показываем контент перед анимацией
-      gsap.set(content, { display: "block", height: 0 })
-
-      // Анимация открытия с GSAP
-      gsap.to(content, {
-        height: height,
-        opacity: 1,
-        duration: 0.5,
-        ease: "power2.out",
-      })
-    } else {
-      // Закрываем текущий аккордеон
-      item.classList.remove("active")
-
-      // Анимация закрытия с GSAP
-      gsap.to(content, {
-        height: 0,
-        opacity: 0,
-        duration: 0.4,
-        ease: "power2.out",
-        onComplete: () => {
-          gsap.set(content, { display: "none" })
-        },
-      })
-    }
+  // Функция для проверки, открыт ли хотя бы один аккордеон
+  function isAnyAccordionOpen() {
+    return Array.from(accordionItems).some(item => item.classList.contains("active"));
   }
 
   // Добавляем обработчик события для каждого заголовка аккордеона
   accordionItems.forEach((item) => {
-    const header = item.querySelector(".accordion-header")
+    const header = item.querySelector(".accordion-header");
+    const content = item.querySelector(".accordion-content");
 
+    // Обработчик клика на весь заголовок
     header.addEventListener("click", () => {
-      toggleAccordion(item)
-    })
-  })
+      // Проверяем, активен ли текущий элемент
+      const isActive = item.classList.contains("active");
+
+      if (isActive) {
+        // Закрываем текущий аккордеон
+        item.classList.remove("active");
+        content.style.maxHeight = "0";
+      } else {
+        // Открываем текущий аккордеон с анимацией
+        openAccordion(item, true);
+      }
+    });
+  });
 
   // Обработчик для кнопок "Подробнее"
-  const moreLinks = document.querySelectorAll(".service-more-link")
+  const moreLinks = document.querySelectorAll(".service-more-link");
 
-  moreLinks.forEach((link) => {
+  moreLinks.forEach(link => {
     link.addEventListener("click", function (e) {
-      e.preventDefault()
+      e.preventDefault(); // Предотвращаем стандартное поведение ссылки
 
-      const targetId = this.getAttribute("href")
-      const targetAccordion = document.querySelector(targetId)
+      // Получаем ID аккордеона из атрибута href ссылки
+      const targetId = this.getAttribute("href");
+      const targetAccordion = document.querySelector(targetId);
 
       if (targetAccordion) {
-        // Определяем высоту фиксированного хедера
-        const header = document.querySelector(".header")
-        const headerOffset = header ? header.offsetHeight : 0
+        // Определяем высоту фиксированного хедера (если есть)
+        const header = document.querySelector('.header');
+        const headerOffset = header ? header.offsetHeight : 0;
 
-        // Открываем аккордеон
-        if (!targetAccordion.classList.contains("active")) {
-          toggleAccordion(targetAccordion)
+        // Проверяем, открыт ли хотя бы один аккордеон
+        if (isAnyAccordionOpen()) {
+          // Если открыт хотя бы один аккордеон, закрываем все без анимации
+          closeAllAccordions();
+
+          // Затем открываем нужный аккордеон без анимации
+          setTimeout(() => {
+            openAccordion(targetAccordion, false);
+
+            // После открытия аккордеона прокручиваем к нему
+            setTimeout(() => {
+              // Получаем позицию аккордеона
+              const accordionRect = targetAccordion.getBoundingClientRect();
+              const absoluteAccordionTop = accordionRect.top + window.pageYOffset;
+
+              // Вычисляем позицию для прокрутки с учетом отступа
+              const scrollPosition = absoluteAccordionTop - headerOffset - 20;
+
+              // Прокручиваем страницу к вычисленной позиции
+              window.scrollTo({
+                top: scrollPosition,
+                behavior: 'smooth'
+              });
+            }, 50);
+          }, 50);
+        } else {
+          // Если не открыт ни один аккордеон, просто открываем нужный без анимации
+          openAccordion(targetAccordion, false);
+
+          // После открытия аккордеона прокручиваем к нему
+          setTimeout(() => {
+            // Получаем позицию аккордеона
+            const accordionRect = targetAccordion.getBoundingClientRect();
+            const absoluteAccordionTop = accordionRect.top + window.pageYOffset;
+
+            // Вычисляем позицию для прокрутки с учетом отступа
+            const scrollPosition = absoluteAccordionTop - headerOffset - 20;
+
+            // Прокручиваем страницу к вычисленной позиции
+            window.scrollTo({
+              top: scrollPosition,
+              behavior: 'smooth'
+            });
+          }, 50);
         }
-
-        // Прокручиваем к аккордеону после небольшой задержки
-        setTimeout(() => {
-          const accordionRect = targetAccordion.getBoundingClientRect()
-          const absoluteAccordionTop = accordionRect.top + window.pageYOffset
-          const scrollPosition = absoluteAccordionTop - headerOffset - 20
-
-          // Используем GSAP для плавной прокрутки
-          gsap.to(window, {
-            scrollTo: scrollPosition,
-            duration: 0.8,
-            ease: "power2.out",
-          })
-        }, 300)
       }
-    })
-  })
-
-  // Обновление высоты при изменении размера окна
-  window.addEventListener(
-    "resize",
-    debounce(() => {
-      accordionItems.forEach((item) => {
-        const content = item.querySelector(".accordion-content")
-        const inner = item.querySelector(".tariff-details-inner")
-
-        if (inner && item.classList.contains("active")) {
-          // Для открытых аккордеонов обновляем высоту
-          gsap.set(content, { height: "auto" })
-          const height = inner.offsetHeight
-          content.setAttribute("data-height", height)
-        } else if (inner) {
-          // Для закрытых аккордеонов измеряем и сохраняем
-          gsap.set(content, { display: "block", visibility: "hidden", height: "auto" })
-          const height = inner.offsetHeight
-          gsap.set(content, { display: "none", visibility: "visible", height: 0 })
-          content.setAttribute("data-height", height)
-        }
-      })
-    }, 250),
-  )
-
-  // Функция debounce для оптимизации обработчика resize
-  function debounce(func, wait) {
-    let timeout
-    return function () {
-
-      const args = arguments
-      clearTimeout(timeout)
-      timeout = setTimeout(() => func.apply(this, args), wait)
-    }
-  }
-})
+    });
+  });
+});
