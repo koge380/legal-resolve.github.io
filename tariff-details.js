@@ -1,10 +1,43 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Проверяем, загружен ли GSAP
+  if (typeof gsap === "undefined") {
+    console.error("GSAP не загружен. Пожалуйста, добавьте библиотеку GSAP.")
+    return
+  }
+
   const accordionItems = document.querySelectorAll(".accordion-item")
+
+  // Подготавливаем все аккордеоны
+  accordionItems.forEach((item) => {
+    const content = item.querySelector(".accordion-content")
+    const inner = item.querySelector(".tariff-details-inner")
+
+    // Устанавливаем начальное состояние
+    gsap.set(content, {
+      height: 0,
+      opacity: 0,
+      overflow: "hidden",
+      display: "none",
+    })
+
+    // Измеряем высоту содержимого и сохраняем её как атрибут
+    if (inner) {
+      // Временно делаем видимым для измерения
+      gsap.set(content, { display: "block", visibility: "hidden", height: "auto" })
+      const height = inner.offsetHeight
+      // Возвращаем в исходное состояние
+      gsap.set(content, { display: "none", visibility: "visible", height: 0 })
+
+      // Сохраняем высоту как атрибут
+      content.setAttribute("data-height", height)
+    }
+  })
 
   // Функция для открытия/закрытия аккордеона
   function toggleAccordion(item) {
     const isActive = item.classList.contains("active")
     const content = item.querySelector(".accordion-content")
+    const height = Number.parseInt(content.getAttribute("data-height") || 0)
 
     // Если аккордеон закрыт и его нужно открыть
     if (!isActive) {
@@ -14,36 +47,46 @@ document.addEventListener("DOMContentLoaded", () => {
           const otherContent = otherItem.querySelector(".accordion-content")
           otherItem.classList.remove("active")
 
-          // Анимация закрытия для других аккордеонов
-          otherContent.style.maxHeight = "0"
-          otherContent.style.opacity = "0"
-          otherContent.style.transform = "translateY(-10px)"
+          // Анимация закрытия с GSAP
+          gsap.to(otherContent, {
+            height: 0,
+            opacity: 0,
+            duration: 0.4,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(otherContent, { display: "none" })
+            },
+          })
         }
       })
 
-      // Затем открываем текущий аккордеон
+      // Открываем текущий аккордеон
       item.classList.add("active")
 
-      // Устанавливаем начальное состояние для анимации
-      content.style.display = "block"
-      content.style.maxHeight = "0"
-      content.style.opacity = "0"
-      content.style.transform = "translateY(-10px)"
+      // Показываем контент перед анимацией
+      gsap.set(content, { display: "block", height: 0 })
 
-      // Запускаем анимацию открытия после небольшой задержки
-      setTimeout(() => {
-        content.style.maxHeight = content.scrollHeight + "px"
-        content.style.opacity = "1"
-        content.style.transform = "translateY(0)"
-      }, 10)
+      // Анимация открытия с GSAP
+      gsap.to(content, {
+        height: height,
+        opacity: 1,
+        duration: 0.5,
+        ease: "power2.out",
+      })
     } else {
       // Закрываем текущий аккордеон
       item.classList.remove("active")
 
-      // Анимация закрытия
-      content.style.maxHeight = "0"
-      content.style.opacity = "0"
-      content.style.transform = "translateY(-10px)"
+      // Анимация закрытия с GSAP
+      gsap.to(content, {
+        height: 0,
+        opacity: 0,
+        duration: 0.4,
+        ease: "power2.out",
+        onComplete: () => {
+          gsap.set(content, { display: "none" })
+        },
+      })
     }
   }
 
@@ -82,12 +125,49 @@ document.addEventListener("DOMContentLoaded", () => {
           const absoluteAccordionTop = accordionRect.top + window.pageYOffset
           const scrollPosition = absoluteAccordionTop - headerOffset - 20
 
-          window.scrollTo({
-            top: scrollPosition,
-            behavior: "smooth",
+          // Используем GSAP для плавной прокрутки
+          gsap.to(window, {
+            scrollTo: scrollPosition,
+            duration: 0.8,
+            ease: "power2.out",
           })
-        }, 300) // Задержка для завершения анимации открытия
+        }, 300)
       }
     })
   })
+
+  // Обновление высоты при изменении размера окна
+  window.addEventListener(
+    "resize",
+    debounce(() => {
+      accordionItems.forEach((item) => {
+        const content = item.querySelector(".accordion-content")
+        const inner = item.querySelector(".tariff-details-inner")
+
+        if (inner && item.classList.contains("active")) {
+          // Для открытых аккордеонов обновляем высоту
+          gsap.set(content, { height: "auto" })
+          const height = inner.offsetHeight
+          content.setAttribute("data-height", height)
+        } else if (inner) {
+          // Для закрытых аккордеонов измеряем и сохраняем
+          gsap.set(content, { display: "block", visibility: "hidden", height: "auto" })
+          const height = inner.offsetHeight
+          gsap.set(content, { display: "none", visibility: "visible", height: 0 })
+          content.setAttribute("data-height", height)
+        }
+      })
+    }, 250),
+  )
+
+  // Функция debounce для оптимизации обработчика resize
+  function debounce(func, wait) {
+    let timeout
+    return function () {
+
+      const args = arguments
+      clearTimeout(timeout)
+      timeout = setTimeout(() => func.apply(this, args), wait)
+    }
+  }
 })
