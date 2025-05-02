@@ -449,12 +449,18 @@
     transform: rotate(180deg);
 }
 
-.accordion-content {
+/*.accordion-content {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s ease;
-}
+}*/
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: max-height;
 
+}
 .accordion-item.active .accordion-content {
     max-height: 2000px;
     /* Достаточно большое значение для любого контента */
