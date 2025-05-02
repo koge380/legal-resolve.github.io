@@ -33,7 +33,7 @@
 }
 
 .breadcrumbs-link:hover {
-    color: var(--color-accent, #b3946f);
+    color: var(--color-accent, #B3946F);
     opacity: 0.9;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .breadcrumbs-current {
-    color: var(--color-accent, #b3946f);
+    color: var(--color-accent, #B3946F);
     font-weight: 500;
 }
 
@@ -80,6 +80,7 @@
     position: relative;
     border-left: 2px solid var(--color-accent);
 }
+
 
 .eligibility-title {
     font-size: 1.25rem;
@@ -381,7 +382,6 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 1.5rem;
 }
 
 .accordion-item:hover {
@@ -449,9 +449,15 @@
     transform: rotate(180deg);
 }
 
-/* Стили для содержимого аккордеона - GSAP будет управлять этими свойствами */
 .accordion-content {
+    max-height: 0;
     overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+.accordion-item.active .accordion-content {
+    max-height: 2000px;
+    /* Достаточно большое значение для любого контента */
 }
 
 .tariff-details-inner {
@@ -504,6 +510,26 @@
 /* CSS для выделенного блока с кнопкой */
 .tariff-cta {
     margin-top: 30px;
+    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease;
+    /* transition-delay: 0.2s; */
+    overflow: hidden;
+}
+
+.accordion-item:not(.active) .tariff-cta {
+    opacity: 0;
+    transform: translateY(20px);
+    max-height: 0;
+    margin: 0;
+    padding: 0;
+}
+
+/* Класс для активного состояния */
+.accordion-item.active .tariff-cta {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+    /* Достаточно для содержимого */
+    margin-top: 30px;
 }
 
 .cta-content {
@@ -545,21 +571,13 @@
         flex-direction: column;
         text-align: center;
         gap: 20px;
-        padding: 20px;
+        padding: 0px;
+        padding-bottom: 20px;
+        padding-top: 10px;
     }
 
     .cta-text p {
         max-width: 100%;
-    }
-
-    .accordion-header {
-        flex-wrap: wrap;
-        padding: 1.25rem;
-    }
-
-    .tariff-brief {
-        flex: 0 0 100%;
-        margin-bottom: 1rem;
     }
 }
 
@@ -681,6 +699,7 @@
     color: var(--color-text-light);
     line-height: 1.6;
 }
+
 
 /* Адаптивность */
 @media (max-width: 1200px) {
