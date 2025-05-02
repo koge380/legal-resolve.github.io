@@ -222,7 +222,7 @@
     margin-bottom: 3rem;
 }
 
-/* Адаптивность для моб��льных устройств */
+/* Адаптивность для мобильных устройств */
 @media (max-width: 1024px) {
     .tariffs-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -381,6 +381,7 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 1.5rem;
 }
 
 .accordion-item:hover {
@@ -448,22 +449,9 @@
     transform: rotate(180deg);
 }
 
-/* Новые стили для плавной анимации аккордеона */
+/* Стили для содержимого аккордеона - GSAP будет управлять этими свойствами */
 .accordion-content {
-    display: none;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: max-height 0.4s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 0.4s cubic-bezier(0.215, 0.61, 0.355, 1),
-        transform 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
-    will-change: max-height, opacity, transform;
     overflow: hidden;
-}
-
-.accordion-item.active .accordion-content {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
 }
 
 .tariff-details-inner {
@@ -516,16 +504,6 @@
 /* CSS для выделенного блока с кнопкой */
 .tariff-cta {
     margin-top: 30px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    display: none;
-}
-
-.accordion-item.active .tariff-cta {
-    opacity: 1;
-    transform: translateY(0);
-    display: block;
 }
 
 .cta-content {
@@ -567,25 +545,21 @@
         flex-direction: column;
         text-align: center;
         gap: 20px;
-        padding: 0px;
-        padding-bottom: 20px;
-        padding-top: 10px;
+        padding: 20px;
     }
 
     .cta-text p {
         max-width: 100%;
     }
 
-    /* Дополнительные оптимизации для мобильных устройств */
-    .accordion-content {
-        /* Включаем аппаратное ускорение для мобильных устройств */
-        -webkit-transform: translate3d(0, -10px, 0);
-        transform: translate3d(0, -10px, 0);
+    .accordion-header {
+        flex-wrap: wrap;
+        padding: 1.25rem;
     }
 
-    .accordion-item.active .accordion-content {
-        -webkit-transform: translate3d(0, 0, 0);
-        transform: translate3d(0, 0, 0);
+    .tariff-brief {
+        flex: 0 0 100%;
+        margin-bottom: 1rem;
     }
 }
 
