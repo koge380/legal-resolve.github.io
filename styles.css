@@ -179,41 +179,43 @@ button {
     top: 5%;
     right: 15%;
 }
+
 @media (max-width: 768px) {
     .circle {
-      position: fixed;
-      z-index: -1;
-      opacity: 0.3; 
+        position: fixed;
+        z-index: -1;
+        opacity: 0.3;
     }
-    
+
     .circle1 {
-      top: 10%;
-      left: 5%;
-      width: 200px;
-      height: 200px;
+        top: 10%;
+        left: 5%;
+        width: 200px;
+        height: 200px;
     }
-    
+
     .circle2 {
-      bottom: 5%;
-      right: 5%;
-      width: 300px;
-      height: 300px;
+        bottom: 5%;
+        right: 5%;
+        width: 300px;
+        height: 300px;
     }
-    
+
     .circle3 {
-      top: 40%;
-      left: 0;
-      width: 150px;
-      height: 150px;
+        top: 40%;
+        left: 0;
+        width: 150px;
+        height: 150px;
     }
-    
+
     .circle4 {
-      top: 5%;
-      right: 5%;
-      width: 250px;
-      height: 250px;
+        top: 5%;
+        right: 5%;
+        width: 250px;
+        height: 250px;
     }
-  }
+}
+
 /* Glass Effect */
 .glass-card {
     background: var(--glass-bg);
@@ -2571,9 +2573,6 @@ button {
         grid-template-columns: 1fr;
     }
 
-    .contact-form-wrapper {
-        text-align: center;
-    }
 
     .form-group {
         align-items: center;
@@ -2801,8 +2800,8 @@ button {
 }
 
 .tariff-selection-label {
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
+    color: var(--color-accent-light);
+    font-size: 1rem;
     font-weight: 500;
 }
 
@@ -2813,8 +2812,8 @@ button {
     padding-bottom: 2px;
 }
 
-/* Подчеркивание для названия тарифа */
-.tariff-selection-name::after {
+/* Подчеркивание для названия тарифа
+ .tariff-selection-name::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -2823,7 +2822,7 @@ button {
     height: 1px;
     background: linear-gradient(to right, var(--color-accent), transparent);
     opacity: 0.7;
-}
+} */
 
 .tariff-selection-link {
     display: flex;
@@ -2866,13 +2865,19 @@ button {
 
     .tariff-selection-link {
         font-size: 0.8rem;
-        padding: 0.3rem 0.5rem;
+        padding: 0.2rem 0.2rem;
+        margin-left: 0.3rem;
 
     }
 
     .tariff-selection-link .link-icon {
         width: 14px;
         height: 14px;
+    }
+
+    .tariff-selection-content {
+        gap: 0.3rem;
+        flex-direction: column;
     }
 }
 
