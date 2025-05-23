@@ -355,307 +355,155 @@
         <section class="services">
             <div class="container">
                 <div class="section-header">
-                    <h2 class="section-title">Наши тарифы</h2>
+                    <h2 class="section-title">Наши услуги</h2>
                     <p class="section-subtitle">
                         Выберите оптимальный вариант представления интересов в арбитражном суде под ваши потребности
                     </p>
                 </div>
-                <div class="tariffs-grid" id="tariffs">
+                <div class="tariffs-accordion">
                     <!-- Тариф "Базовый" -->
-                    <div class="service-card">
-                        <div class="service-header">
-                            <div class="service-icon">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    <div class="accordion-item" id="base">
+                        <div class="accordion-header">
+                            <div class="tariff-brief">
+                                <h4 class="tariff-name">Базовый</h4>
+                                <p class="tariff-short-desc">Для представления интересов в одной инстанции</p>
+                            </div>
+                            <div class="tariff-price">от 40 000 ₽</div>
+                            <button class="accordion-toggle">
+                                <svg class="toggle-icon" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-                            </div>
-                            <h3 class="service-title">Базовый</h3>
+                            </button>
                         </div>
-                        <div class="service-content">
-                            <p class="service-description">
-                                Оптимальное решение для представления интересов в одной инстанции арбитражного суда.
-                            </p>
-                            <div class="service-features">
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Анализ документов</span>
+                        <div class="accordion-content">
+                            <div class="tariff-details-inner">
+                                <div class="tariff-column">
+                                    <h5 class="tariff-subtitle">Что входит в тариф:</h5>
+                                    <ul class="tariff-features">
+                                        <li>Первичная консультация и анализ документов</li>
+                                        <li>Разработка правовой позиции по делу</li>
+                                        <li>Подготовка необходимых процессуальных документов</li>
+                                        <li>Участие в 3 судебных заседаниях</li>
+                                        <li>Представление интересов в одной инстанции</li>
+                                        <li>Заявление ходатайств и представление доказательств</li>
+                                        <li>Получение судебных актов</li>
+                                        <li>Консультационная поддержка в течение всего процесса</li>
+                                    </ul>
                                 </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Подготовка правовой позиции</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Участие в 3 заседаниях</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Одна инстанция</span>
-                                </div>
-                                <div class="service-feature">
-                                    <a href="#base" class="service-more-link">
-                                        <span>Подробнее</span>
-                                    </a>
+                                <div class="tariff-column">
+                                    <div class="tariff-info-block">
+                                        <h5 class="tariff-subtitle">Сроки:</h5>
+                                        <p>В соответствии с процессуальными сроками рассмотрения дела</p>
+                                    </div>
+                                    <div class="tariff-info-block">
+                                        <h5 class="tariff-subtitle">Рассрочка:</h5>
+                                        <p>До 3 месяцев, первый взнос от 10 000 ₽</p>
+                                    </div>
+                                    <div class="tariff-info-block">
+                                        <h5 class="tariff-subtitle">Для кого подходит:</h5>
+                                        <p>Для клиентов с относительно несложными арбитражными делами,
+                                            требующими представительства только в первой инстанции.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="service-footer">
-                            <div class="service-price">
-                                <span class="price-value">от 40 000 ₽</span>
-                                <span class="price-period">или 13 300 ₽/мес</span>
+                        <div class="tariff-cta">
+                            <div class="cta-content">
+                                <div class="cta-text">
+                                    <h5>Готовы заказать представление интересов в арбитражном суде?</h5>
+                                    <p>Оформите заказ прямо сейчас и получите первичную консультацию бесплатно
+                                    </p>
+                                </div>
+                                <div class="cta-button">
+                                    <a href="#" data-modal="contact-modal"
+                                        class="order-button-large btn-primary">Заказать
+                                        тариф</a>
+                                </div>
                             </div>
-                            <a href="#" data-modal="contact-modal" class="service-button">
-                                Заказать
-                                <svg class="button-icon" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </a>
                         </div>
                     </div>
 
-                    <!-- Тариф "Стандарт" (без выделения) -->
-                    <div class="service-card">
-                        <div class="service-header">
-                            <div class="service-icon">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    <!-- Тариф "Стандарт" -->
+                    <div class="accordion-item" id="standart">
+                        <div class="accordion-header">
+                            <div class="tariff-brief">
+                                <h4 class="tariff-name">Стандарт</h4>
+                                <p class="tariff-short-desc">Для представления интересов в двух инстанциях
+                                </p>
+                            </div>
+                            <div class="tariff-price">от 70 000 ₽</div>
+                            <button class="accordion-toggle">
+                                <svg class="toggle-icon" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" />
                                 </svg>
-                            </div>
-                            <h3 class="service-title">Стандарт</h3>
+                            </button>
                         </div>
-                        <div class="service-content">
-                            <p class="service-description">
-                                Полное сопровождение арбитражного дела в двух инстанциях с расширенным набором услуг.
-                            </p>
-                            <div class="service-features">
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Всё включено в "Базовый"</span>
+                        <div class="accordion-content">
+                            <div class="tariff-details-inner">
+                                <div class="tariff-column">
+                                    <h5 class="tariff-subtitle">Что входит в тариф:</h5>
+                                    <ul class="tariff-features">
+                                        <li>Всё, что входит в тариф "Базовый"</li>
+                                        <li>Участие в 6 судебных заседаниях</li>
+                                        <li>Представление интересов в двух инстанциях</li>
+                                        <li>Подготовка апелляционной жалобы или отзыва на нее</li>
+                                        <li>Сбор дополнительных доказательств</li>
+                                        <li>Подготовка всех необходимых процессуальных документов</li>
+                                        <li>Расширенная консультационная поддержка</li>
+                                        <li>Анализ судебной практики по аналогичным делам</li>
+                                        <li>Разработка стратегии ведения дела в апелляции</li>
+                                    </ul>
                                 </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Участие в 6 заседаниях</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Две инстанции</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Подготовка всех документов</span>
-                                </div>
-                                <div class="service-feature">
-                                    <a href="#standart" class="service-more-link">
-                                        <span>Подробнее</span>
-                                    </a>
+                                <div class="tariff-column">
+                                    <div class="tariff-info-block">
+                                        <h5 class="tariff-subtitle">Сроки:</h5>
+                                        <p>В соответствии с процессуальными сроками рассмотрения дела в двух
+                                            инстанциях</p>
+                                    </div>
+                                    <div class="tariff-info-block">
+                                        <h5 class="tariff-subtitle">Рассрочка:</h5>
+                                        <p>До 3 месяцев, первый взнос от 20 000 ₽</p>
+                                    </div>
+                                    <div class="tariff-info-block">
+                                        <h5 class="tariff-subtitle">Для кого подходит:</h5>
+                                        <p>Для клиентов со средним уровнем сложности арбитражных дел, требующих
+                                            представительства в первой и апелляционной инстанциях.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="service-footer">
-                            <div class="service-price">
-                                <span class="price-value">от 70 000 ₽</span>
-                                <span class="price-period">или 23 300 ₽/мес</span>
+                        <div class="tariff-cta">
+                            <div class="cta-content">
+                                <div class="cta-text">
+                                    <h5>Готовы заказать представление интересов в арбитражном суде?</h5>
+                                    <p>Оформите заказ прямо сейчас и получите первичную консультацию бесплатно
+                                    </p>
+                                </div>
+                                <div class="cta-button">
+                                    <a href="#" data-modal="contact-modal"
+                                        class="order-button-large btn-primary">Заказать
+                                        тариф</a>
+                                </div>
                             </div>
-                            <a href="#" data-modal="contact-modal" class="service-button">
-                                Заказать
-                                <svg class="button-icon" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </a>
                         </div>
                     </div>
 
-                    <!-- Тариф "Премиум" -->
-                    <div class="service-card">
-                        <div class="service-header">
-                            <div class="service-icon">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                            <h3 class="service-title">Премиум</h3>
+                    <!-- Минималистичная информация о рассрочке и скидках -->
+                    <div class="additional-info">
+                        <div class="info-item">
+                            <span class="info-label">Рассрочка:</span>
+                            <span class="info-value">До 3 месяцев без переплат, первый взнос от 10 000 ₽</span>
                         </div>
-                        <div class="service-content">
-                            <p class="service-description">
-                                Комплексное решение для сложных арбитражных дел с прохождением всех судебных инстанций.
-                            </p>
-                            <div class="service-features">
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Всё включено в "Стандарт"</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Неограниченное число заседаний</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Все инстанции</span>
-                                </div>
-                                <div class="service-feature">
-                                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <span>Персональный юрист 24/7</span>
-                                </div>
-                                <div class="service-feature">
-                                    <a href="#premium" class="service-more-link">
-                                        <span>Подробнее</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="service-footer">
-                            <div class="service-price">
-                                <span class="price-value">от 120 000 ₽</span>
-                                <span class="price-period">или 40 000 ₽/мес</span>
-                            </div>
-                            <a href="#" data-modal="contact-modal" class="service-button">
-                                Заказать
-                                <svg class="button-icon" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </a>
+                        <div class="info-item">
+                            <span class="info-label">Социальные скидки:</span>
+                            <span class="info-value">15% для пенсионеров, инвалидов, многодетных семей</span>
                         </div>
                     </div>
                 </div>
-                <div class="service-card individual-card">
-                    <div class="service-header">
-                        <div class="service-icon">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                                <circle cx="9" cy="7" r="4" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </div>
-                        <h3 class="service-title">Индивидуальный подход</h3>
-                    </div>
-                    <div class="service-content">
-                        <p class="service-description">
-                            Мы понимаем, что каждое арбитражное дело уникально. Если ни один из стандартных тарифов не
-                            подходит для вашего случая, мы готовы разработать индивидуальное предложение,
-                            учитывающее все особенности вашей ситуации.
-                        </p>
-                        <div class="service-features">
-                            <div class="service-feature">
-                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <span>Персональный юрист</span>
-                            </div>
-                            <div class="service-feature">
-                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <span>Гибкие условия оплаты</span>
-                            </div>
-                            <div class="service-feature">
-                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                                <span>Учет всех особенностей дела</span>
-                            </div>
-                            <div class="service-feature">
-                                <a href="#individual" class="service-more-link">
-                                    <span>Подробнее</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="service-footer">
-                        <div class="service-price">
-                            <span class="price-value">Индивидуально</span>
-                            <span class="price-period">по договоренности</span>
-                        </div>
-                        <a href="#" data-modal="contact-modal" class="service-button">
-                            Получить предложение
-                            <svg class="button-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2"
-                                    stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Минималистичная информация о рассрочке и скидках -->
-                <div class="additional-info">
-                    <div class="info-item">
-                        <span class="info-label">Рассрочка:</span>
-                        <span class="info-value">До 3 месяцев без переплат, первый взнос от 10 000 ₽</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Социальные скидки:</span>
-                        <span class="info-value">15% для пенсионеров, инвалидов, многодетных семей</span>
-                    </div>
-                </div>
-            </div>
         </section>
         <section class="tariffs-desc" id="tariffs-desc">
             <div class="container">
@@ -808,280 +656,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Подробное описание тарифов (аккордеон) -->
-                    <div class="tariffs-details">
-                        <h3 class="description-title">Дополнительная информация о тарифах</h3>
-                        <p class="tariffs-intro">
-                            Каждый из наших тарифов включает полное юридическое сопровождение на всех этапах
-                            представления интересов в арбитражном суде. Ниже представлена подробная информация о
-                            дополнительных услугах и особенностях каждого тарифа.
-                        </p>
-
-                        <div class="tariffs-accordion">
-                            <!-- Тариф "Базовый" -->
-                            <div class="accordion-item" id="base">
-                                <div class="accordion-header">
-                                    <div class="tariff-brief">
-                                        <h4 class="tariff-name">Базовый</h4>
-                                        <p class="tariff-short-desc">Для представления интересов в одной инстанции</p>
-                                    </div>
-                                    <div class="tariff-price">от 40 000 ₽</div>
-                                    <button class="accordion-toggle">
-                                        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="tariff-details-inner">
-                                        <div class="tariff-column">
-                                            <h5 class="tariff-subtitle">Что входит в тариф:</h5>
-                                            <ul class="tariff-features">
-                                                <li>Первичная консультация и анализ документов</li>
-                                                <li>Разработка правовой позиции по делу</li>
-                                                <li>Подготовка необходимых процессуальных документов</li>
-                                                <li>Участие в 3 судебных заседаниях</li>
-                                                <li>Представление интересов в одной инстанции</li>
-                                                <li>Заявление ходатайств и представление доказательств</li>
-                                                <li>Получение судебных актов</li>
-                                                <li>Консультационная поддержка в течение всего процесса</li>
-                                            </ul>
-                                        </div>
-                                        <div class="tariff-column">
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Сроки:</h5>
-                                                <p>В соответствии с процессуальными сроками рассмотрения дела</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Рассрочка:</h5>
-                                                <p>До 3 месяцев, первый взнос от 10 000 ₽</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Для кого подходит:</h5>
-                                                <p>Для клиентов с относительно несложными арбитражными делами,
-                                                    требующими представительства только в первой инстанции.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tariff-cta">
-                                    <div class="cta-content">
-                                        <div class="cta-text">
-                                            <h5>Готовы заказать представление интересов в арбитражном суде?</h5>
-                                            <p>Оформите заказ прямо сейчас и получите первичную консультацию бесплатно
-                                            </p>
-                                        </div>
-                                        <div class="cta-button">
-                                            <a href="#" data-modal="contact-modal"
-                                                class="order-button-large btn-primary">Заказать
-                                                тариф</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Тариф "Стандарт" -->
-                            <div class="accordion-item" id="standart">
-                                <div class="accordion-header">
-                                    <div class="tariff-brief">
-                                        <h4 class="tariff-name">Стандарт</h4>
-                                        <p class="tariff-short-desc">Для представления интересов в двух инстанциях
-                                        </p>
-                                    </div>
-                                    <div class="tariff-price">от 70 000 ₽</div>
-                                    <button class="accordion-toggle">
-                                        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="tariff-details-inner">
-                                        <div class="tariff-column">
-                                            <h5 class="tariff-subtitle">Что входит в тариф:</h5>
-                                            <ul class="tariff-features">
-                                                <li>Всё, что входит в тариф "Базовый"</li>
-                                                <li>Участие в 6 судебных заседаниях</li>
-                                                <li>Представление интересов в двух инстанциях</li>
-                                                <li>Подготовка апелляционной жалобы или отзыва на нее</li>
-                                                <li>Сбор дополнительных доказательств</li>
-                                                <li>Подготовка всех необходимых процессуальных документов</li>
-                                                <li>Расширенная консультационная поддержка</li>
-                                                <li>Анализ судебной практики по аналогичным делам</li>
-                                                <li>Разработка стратегии ведения дела в апелляции</li>
-                                            </ul>
-                                        </div>
-                                        <div class="tariff-column">
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Сроки:</h5>
-                                                <p>В соответствии с процессуальными сроками рассмотрения дела в двух
-                                                    инстанциях</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Рассрочка:</h5>
-                                                <p>До 3 месяцев, первый взнос от 20 000 ₽</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Для кого подходит:</h5>
-                                                <p>Для клиентов со средним уровнем сложности арбитражных дел, требующих
-                                                    представительства в первой и апелляционной инстанциях.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tariff-cta">
-                                    <div class="cta-content">
-                                        <div class="cta-text">
-                                            <h5>Готовы заказать представление интересов в арбитражном суде?</h5>
-                                            <p>Оформите заказ прямо сейчас и получите первичную консультацию бесплатно
-                                            </p>
-                                        </div>
-                                        <div class="cta-button">
-                                            <a href="#" data-modal="contact-modal"
-                                                class="order-button-large btn-primary">Заказать
-                                                тариф</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Тариф "Премиум" -->
-                            <div class="accordion-item" id="premium">
-                                <div class="accordion-header">
-                                    <div class="tariff-brief">
-                                        <h4 class="tariff-name">Премиум</h4>
-                                        <p class="tariff-short-desc">Для представления интересов во всех инстанциях</p>
-                                    </div>
-                                    <div class="tariff-price">от 120 000 ₽</div>
-                                    <button class="accordion-toggle">
-                                        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="tariff-details-inner">
-                                        <div class="tariff-column">
-                                            <h5 class="tariff-subtitle">Что входит в тариф:</h5>
-                                            <ul class="tariff-features">
-                                                <li>Всё, что входит в тариф "Стандарт"</li>
-                                                <li>Неограниченное количество судебных заседаний</li>
-                                                <li>Представление интересов во всех инстанциях</li>
-                                                <li>Подготовка кассационных и надзорных жалоб</li>
-                                                <li>Персональный юрист на связи 24/7</li>
-                                                <li>Экспертная оценка перспектив дела</li>
-                                                <li>Привлечение узкопрофильных специалистов при необходимости</li>
-                                                <li>Сопровождение исполнительного производства</li>
-                                                <li>Комплексная защита интересов на всех этапах</li>
-                                                <li>Разработка альтернативных стратегий ведения дела</li>
-                                            </ul>
-                                        </div>
-                                        <div class="tariff-column">
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Сроки:</h5>
-                                                <p>В соответствии с процессуальными сроками рассмотрения дела во всех
-                                                    инстанциях</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Рассрочка:</h5>
-                                                <p>До 3 месяцев, первый взнос от 30 000 ₽</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Для кого подходит:</h5>
-                                                <p>Для клиентов со сложными арбитражными делами, требующими
-                                                    представительства во всех судебных инстанциях, включая кассацию и
-                                                    надзор.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tariff-cta">
-                                    <div class="cta-content">
-                                        <div class="cta-text">
-                                            <h5>Готовы заказать представление интересов в арбитражном суде?</h5>
-                                            <p>Оформите заказ прямо сейчас и получите первичную консультацию бесплатно
-                                            </p>
-                                        </div>
-                                        <div class="cta-button">
-                                            <a href="#" data-modal="contact-modal"
-                                                class="order-button-large btn-primary">Заказать
-                                                тариф</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="accordion-item" id="individual">
-                                <div class="accordion-header">
-                                    <div class="tariff-brief">
-                                        <h4 class="tariff-name">Индивидуальный подход</h4>
-                                        <p class="tariff-short-desc">Для особых случаев с учетом всех ваших потребностей
-                                        </p>
-                                    </div>
-                                    <div class="tariff-price">Индивидуально</div>
-                                    <button class="accordion-toggle">
-                                        <svg class="toggle-icon" viewBox="0 0 24 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="tariff-details-inner">
-                                        <div class="tariff-column">
-                                            <h5 class="tariff-subtitle">Что входит в тариф:</h5>
-                                            <ul class="tariff-features">
-                                                <li>Персональный юрист на связи 24/7</li>
-                                                <li>Индивидуальная стратегия ведения дела</li>
-                                                <li>Гибкие условия оплаты</li>
-                                                <li>Учет всех особенностей вашей ситуации</li>
-                                                <li>Возможность комбинирования услуг из разных тарифов</li>
-                                                <li>Приоритетное обслуживание</li>
-                                                <li>Расширенная консультационная поддержка</li>
-                                                <li>Индивидуальный подход к каждому этапу процесса</li>
-                                            </ul>
-                                        </div>
-                                        <div class="tariff-column">
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Сроки:</h5>
-                                                <p>Индивидуально в зависимости от сложности дела</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Рассрочка:</h5>
-                                                <p>Индивидуальные условия оплаты</p>
-                                            </div>
-                                            <div class="tariff-info-block">
-                                                <h5 class="tariff-subtitle">Для кого подходит:</h5>
-                                                <p>Для клиентов с нестандартными арбитражными делами, требующими особого
-                                                    подхода и комбинирования различных юридических услуг.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tariff-cta">
-                                    <div class="cta-content">
-                                        <div class="cta-text">
-                                            <h5>Нужен индивидуальный подход?</h5>
-                                            <p>Оставьте заявку для получения персонального предложения с учетом всех
-                                                особенностей вашей ситуации</p>
-                                        </div>
-                                        <div class="cta-button">
-                                            <a href="#" data-modal="contact-modal"
-                                                class="order-button-large btn-primary">Получить предложение</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
                     <!-- Дополнительная информация -->
