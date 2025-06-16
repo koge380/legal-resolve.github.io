@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель блога</title>
+    <link rel="stylesheet" href="admin-styles-modern.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+</head>
+
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1>Админ-панель блога</h1>
+            <div class="header-actions">
+                <div id="statusIndicator" class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span class="status-text">Готов к работе</span>
+                </div>
+                <button id="previewBtn" class="btn secondary">Предпросмотр</button>
+                <button id="publishBtn" class="btn primary">Опубликовать</button>
+            </div>
+        </header>
+
+        <div class="admin-content">
+            <div class="sidebar">
+                <h3>SEO настройки</h3>
+                <div class="form-group">
+                    <label for="postUrl">URL статьи:</label>
+                    <input type="text" id="postUrl" placeholder="my-awesome-post">
+                </div>
+                <div class="form-group">
+                    <label for="metaTitle">Meta заголовок:</label>
+                    <input type="text" id="metaTitle" placeholder="Заголовок для SEO" maxlength="60">
+                    <div class="char-counter">
+                        <span id="metaTitleCount">0</span>/60
+                        <div class="progress-bar">
+                            <div id="metaTitleProgress" class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="metaDescription">Meta описание:</label>
+                    <textarea id="metaDescription" placeholder="Краткое описание статьи для SEO"
+                        maxlength="160"></textarea>
+                    <div class="char-counter">
+                        <span id="metaDescCount">0</span>/160
+                        <div class="progress-bar">
+                            <div id="metaDescProgress" class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="featuredImage">Главное изображение:</label>
+                    <div class="image-upload">
+                        <input type="file" id="featuredImage" accept="image/*">
+                        <div class="upload-placeholder" id="imagePreview">
+                            <span class="material-symbols-outlined">image</span>
+                            <span>Выберите изображение</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tags">Теги (через запятую):</label>
+                    <input type="text" id="tags" placeholder="блог, статья, веб-разработка">
+                </div>
+                <div class="form-group">
+                    <label for="category">Категория:</label>
+                    <input type="text" id="category" placeholder="Банкротство, Имущество, МФЦ и т.д.">
+                </div>
+
+                <div class="word-counter">
+                    <div id="wordCount">0 слов</div>
+                    <div id="charCount">0 символов</div>
+                </div>
+            </div>
+
+            <div class="editor-container">
+                <div class="title-input">
+                    <input type="text" id="postTitle" placeholder="Введите заголовок статьи..." class="post-title">
+                </div>
+
+                <div class="toolbar">
+                    <div class="toolbar-group">
+                        <button data-command="formatBlock" data-value="h2" class="toolbar-btn"
+                            title="Заголовок 2">H2</button>
+                        <button data-command="formatBlock" data-value="h3" class="toolbar-btn"
+                            title="Заголовок 3">H3</button>
+                        <button data-command="formatBlock" data-value="h4" class="toolbar-btn"
+                            title="Заголовок 4">H4</button>
+                        <button data-command="formatBlock" data-value="p" class="toolbar-btn"
+                            title="Параграф">P</button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button data-command="bold" class="toolbar-btn" title="Жирный">
+                            <span class="material-symbols-outlined">format_bold</span>
+                        </button>
+                        <button data-command="italic" class="toolbar-btn" title="Курсив">
+                            <span class="material-symbols-outlined">format_italic</span>
+                        </button>
+                        <button data-command="underline" class="toolbar-btn" title="Подчеркнутый">
+                            <span class="material-symbols-outlined">format_underlined</span>
+                        </button>
+                        <button data-command="strikeThrough" class="toolbar-btn" title="Зачеркнутый">
+                            <span class="material-symbols-outlined">strikethrough_s</span>
+                        </button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button data-command="insertUnorderedList" class="toolbar-btn" title="Маркированный список">
+                            <span class="material-symbols-outlined">format_list_bulleted</span>
+                        </button>
+                        <button data-command="insertOrderedList" class="toolbar-btn" title="Нумерованный список">
+                            <span class="material-symbols-outlined">format_list_numbered</span>
+                        </button>
+                        <button data-command="createLink" class="toolbar-btn" title="Вставить ссылку">
+                            <span class="material-symbols-outlined">link</span>
+                        </button>
+                        <button id="insertImage" class="toolbar-btn" title="Вставить изображение">
+                            <span class="material-symbols-outlined">image</span>
+                        </button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button data-command="justifyLeft" class="toolbar-btn" title="По левому краю">
+                            <span class="material-symbols-outlined">format_align_left</span>
+                        </button>
+                        <button data-command="justifyCenter" class="toolbar-btn" title="По центру">
+                            <span class="material-symbols-outlined">format_align_center</span>
+                        </button>
+                        <button data-command="justifyRight" class="toolbar-btn" title="По правому краю">
+                            <span class="material-symbols-outlined">format_align_right</span>
+                        </button>
+                        <button data-command="justifyFull" class="toolbar-btn" title="По ширине">
+                            <span class="material-symbols-outlined">format_align_justify</span>
+                        </button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button data-command="insertHorizontalRule" class="toolbar-btn" title="Горизонтальная линия">
+                            <span class="material-symbols-outlined">horizontal_rule</span>
+                        </button>
+                        <button data-command="removeFormat" class="toolbar-btn" title="Очистить форматирование">
+                            <span class="material-symbols-outlined">format_clear</span>
+                        </button>
+                        <button id="codeBlock" class="toolbar-btn" title="Блок кода">
+                            <span class="material-symbols-outlined">code</span>
+                        </button>
+                        <button id="quoteBlock" class="toolbar-btn" title="Цитата">
+                            <span class="material-symbols-outlined">format_quote</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="editor" class="editor-content" contenteditable="true">
+                    <p>Начните писать вашу статью здесь...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для публикации -->
+    <div id="publishModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Публикация статьи</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="publishForm">
+                    <div class="publish-preview">
+                        <h3>Предпросмотр публикации:</h3>
+                        <div class="publish-preview-card">
+                            <h4 id="publishPreviewTitle">Заголовок статьи</h4>
+                            <p id="publishPreviewDesc">Описание статьи</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="publishDate">Дата публикации:</label>
+                        <input type="datetime-local" id="publishDate">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="publishNow" checked>
+                            Опубликовать сейчас
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <button id="confirmPublish" class="btn primary">Опубликовать статью</button>
+                    </div>
+                </div>
+                <div id="publishSuccess" style="display: none;">
+                    <div class="success-message">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        <h3>Статья успешно опубликована!</h3>
+                    </div>
+                    <p>Ваша статья доступна по ссылке:</p>
+                    <div class="published-url">
+                        <a href="#" id="publishedUrl" target="_blank"></a>
+                    </div>
+                    <div class="form-group">
+                        <button id="viewPublished" class="btn secondary">Предпросмотр</button>
+                        <button id="createNew" class="btn secondary">Создать новую статью</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin-enhanced.js"></script>
+</body>
+
+</html>
