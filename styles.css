@@ -1329,6 +1329,7 @@ button {
     border-radius: var(--radius-lg);
     background: rgba(26, 26, 40, 0.6);
     padding: 2.5rem;
+    padding-bottom: 1rem;
     text-align: left;
 }
 
@@ -1458,10 +1459,10 @@ button {
     }
 }
 
-@media (max-width: 480px) {
-
-    .contact-form-wrapper {
-        padding: 1rem 0;
+@media (max-height: 680px) {
+    .contact-form {
+        max-width: 95%;
+        gap: .5rem;
     }
 }
 
@@ -1944,6 +1945,7 @@ button {
     margin-bottom: 1.5rem;
     font-size: 0.95rem;
     line-height: 1.6;
+    line-break: anywhere;
 }
 
 .footer-schedule {
@@ -2097,7 +2099,6 @@ button {
     margin-top: 0.5rem;
     font-size: 0.875rem;
     color: var(--color-text-muted);
-    font-style: italic;
 }
 
 .footer-legal {
@@ -2740,6 +2741,9 @@ button {
     align-items: flex-start;
     justify-content: center;
     animation: fadeIn 0.3s;
+    width: auto;
+    max-width: 700px;
+
 }
 
 .contact-modal-close {
@@ -2763,10 +2767,6 @@ button {
     right: 1rem;
 }
 
-/* Современные стили для однострочного блока выбора тарифа */
-.tariff-selection-block {
-    /* margin: 1.25rem 0; */
-}
 
 .tariff-selection-inner {
     display: flex;
@@ -2920,11 +2920,100 @@ button {
         right: 20px;
         max-width: calc(100% - 40px);
     }
+
+    .contact-modal-content {
+        max-width: 90vw;
+    }
+
+    .contact-modal {
+        padding: 10px 5px;
+        overflow-y: auto;
+    }
 }
 
 @media (max-width: 480px) {
     .contact-modal-content {
         padding: 0;
         min-width: unset;
+        max-width: 95vw;
+    }
+}
+
+/* Стили для текста согласия под кнопкой отправки */
+.form-submission-consent-text {
+    font-size: 0.75rem;
+    /* Маленький шрифт */
+    color: var(--color-text-muted);
+    /* Приглушенный цвет */
+    line-height: 1.5;
+    /* Межстрочный интервал для читаемости */
+    text-align: center;
+    /* Центрируем текст */
+    /* Убираем нижний отступ, если он не нужен */
+    padding: 0 0.5rem;
+    /* Небольшие боковые отступы, чтобы текст не прилипал к краям формы на узких экранах */
+}
+
+.form-submission-consent-text a.consent-link {
+    color: var(--color-accent-light);
+    /* Цвет ссылки */
+    text-decoration: underline;
+    /* Подчеркивание для ясности */
+    transition: color var(--transition-fast);
+}
+
+.form-submission-consent-text a.consent-link:hover {
+    color: var(--color-accent);
+    /* Цвет ссылки при наведении */
+    text-decoration: none;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .form-submission-consent-text {
+        font-size: 0.7rem;
+        padding: 0;
+        /* Убираем боковые отступы, если форма и так узкая */
+    }
+}
+
+/* Стили для текста согласия под кнопкой отправки */
+.form-submission-consent-text {
+    font-size: 0.75rem;
+    /* Маленький шрифт */
+    color: var(--color-text-muted);
+    /* Приглушенный цвет */
+    line-height: 1.5;
+    /* Межстрочный интервал для читаемости */
+    text-align: center;
+    /* Центрируем текст */
+    /* Отступ сверху от кнопки */
+    margin-bottom: 0;
+    /* Убираем нижний отступ, если он не нужен */
+    padding: 0 0.5rem;
+    /* Небольшие боковые отступы, чтобы текст не прилипал к краям формы на узких экранах */
+}
+
+.form-submission-consent-text a.consent-link {
+    color: var(--color-accent-light);
+    /* Цвет ссылки */
+    text-decoration: underline;
+    /* Подчеркивание для ясности */
+    transition: color var(--transition-fast);
+}
+
+.form-submission-consent-text a.consent-link:hover {
+    color: var(--color-accent);
+    /* Цвет ссылки при наведении */
+    text-decoration: none;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 480px) {
+    .form-submission-consent-text {
+        font-size: 0.7rem;
+        /* Еще немного уменьшаем шрифт на очень маленьких экранах */
+        padding: 0;
+        /* Убираем боковые отступы, если форма и так узкая */
     }
 }
