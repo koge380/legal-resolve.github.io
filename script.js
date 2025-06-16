@@ -60,9 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Инициализация слайдера услуг
-    initServicesSlider();
-
     // Form validation
     const contactForm = document.getElementById('contactForm');
 
@@ -539,7 +536,8 @@ function initServicesSlider() {
     });
 
     createPagination();
-    equalizeCardHeights();
+    // НЕ вызываем equalizeCardHeights() здесь, чтобы избежать раннего расчета высоты
+
     // Обработчик изменения размера окна
     window.addEventListener('resize', () => {
         const newVisibleCards = getVisibleCards();
@@ -557,14 +555,15 @@ function initServicesSlider() {
             currentIndex = 0;
             goToSlide(0);
 
-            // Перерасчет высоты карточек
-            setTimeout(equalizeCardHeights, 300);
+            // Перерасчет высоты карточек с задержкой
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(equalizeCardHeights, 300);
         }
     });
 
     // Инициализация слайдера
     createPagination();
-    equalizeCardHeights();
+    // НЕ вызываем equalizeCardHeights() здесь, чтобы избежать раннего расчета высоты
 
     // Добавляем поддержку свайпов для мобильных устройств с анимацией
     let touchStartX = 0;
@@ -644,7 +643,11 @@ function initServicesSlider() {
         sliderTrack.style.transition = 'transform 0.5s ease-out';
         goToSlide(currentIndex);
     }, { passive: true });
+
+    // Возвращаем функцию equalizeCardHeights для использования позже
+    return equalizeCardHeights;
 }
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Модальное окно обратной связи
@@ -703,5 +706,16 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape' && contactModal && contactModal.classList.contains('active')) {
             closeContactModal();
         }
+    });
+
+    const equalizeHeights = initServicesSlider();
+
+    window.addEventListener('load', function () {
+        // Даем дополнительное время для завершения рендеринга
+        setTimeout(function () {
+            if (typeof equalizeHeights === 'function') {
+                equalizeHeights();
+            }
+        }, 100);
     });
 });
