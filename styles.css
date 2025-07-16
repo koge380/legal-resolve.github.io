@@ -1937,7 +1937,7 @@ button {
     margin-bottom: 1.5rem;
     font-size: 0.95rem;
     line-height: 1.6;
-    line-break: anywhere;
+/*     line-break: anywhere; */
 }
 
 .footer-schedule {
