@@ -53,6 +53,18 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="cardExcerpt">Описание для карточки:</label>
+                    <textarea id="cardExcerpt"
+                        placeholder="Краткое описание для карточки статьи в блоге (оставьте пустым для автогенерации)"
+                        maxlength="200"></textarea>
+                    <div class="char-counter">
+                        <span id="cardExcerptCount">0</span>/200
+                        <div class="progress-bar">
+                            <div id="cardExcerptProgress" class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="featuredImage">Главное изображение:</label>
                     <div class="image-upload">
                         <input type="file" id="featuredImage" accept="image/*">
@@ -114,8 +126,29 @@
                         <button data-command="insertOrderedList" class="toolbar-btn" title="Нумерованный список">
                             <span class="material-symbols-outlined">format_list_numbered</span>
                         </button>
-                        <button data-command="createLink" class="toolbar-btn" title="Вставить ссылку">
+                        <button id="indentList" class="toolbar-btn" title="Увеличить отступ">
+                            <span class="material-symbols-outlined">format_indent_increase</span>
+                        </button>
+                        <button id="outdentList" class="toolbar-btn" title="Уменьшить отступ">
+                            <span class="material-symbols-outlined">format_indent_decrease</span>
+                        </button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button id="createInternalLink" class="toolbar-btn" title="Внутренняя ссылка">
                             <span class="material-symbols-outlined">link</span>
+                        </button>
+                        <button id="createExternalLink" class="toolbar-btn" title="Внешняя ссылка">
+                            <span class="material-symbols-outlined">open_in_new</span>
+                        </button>
+                        <button id="createAnchor" class="toolbar-btn" title="Создать якорь">
+                            <span class="material-symbols-outlined">anchor</span>
+                        </button>
+                        <button id="removeAnchor" class="toolbar-btn" title="Удалить якорь">
+                            <span class="material-symbols-outlined">link_off</span>
+                        </button>
+                        <button id="autoCreateAnchors" class="toolbar-btn"
+                            title="Автоматически создать якоря для заголовков">
+                            <span class="material-symbols-outlined">auto_fix_high</span>
                         </button>
                         <button id="insertImage" class="toolbar-btn" title="Вставить изображение">
                             <span class="material-symbols-outlined">image</span>
@@ -206,7 +239,119 @@
         </div>
     </div>
 
+    <!-- Модальное окно для создания внутренних ссылок -->
+    <div id="linkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Создать ссылку</h2>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="link-tabs">
+                    <button class="link-tab-btn active" data-tab="internal">Внутренняя ссылка</button>
+                    <button class="link-tab-btn" data-tab="external">Внешняя ссылка</button>
+                    <button class="link-tab-btn" data-tab="anchor">Якорь</button>
+                </div>
+
+                <div id="internalTab" class="link-tab-content active">
+                    <div class="form-group">
+                        <label>Тип внутренней ссылки:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="internalType" value="same" checked>
+                                <span>На раздел в этой статье</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="internalType" value="other">
+                                <span>На другую статью</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="sameArticleSection">
+                        <div class="form-group">
+                            <label for="anchorSelect">Выберите раздел:</label>
+                            <select id="anchorSelect">
+                                <option value="">Выберите заголовок...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="otherArticleSection" style="display: none;">
+                        <div class="form-group">
+                            <label for="articleSelect">Выберите статью:</label>
+                            <select id="articleSelect">
+                                <option value="">Загрузка статей...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="otherAnchorSelect">Раздел в статье (опционально):</label>
+                            <select id="otherAnchorSelect">
+                                <option value="">Ссылка на начало статьи</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="externalTab" class="link-tab-content">
+                    <div class="form-group">
+                        <label>Тип внешней ссылки:</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="externalType" value="url" checked>
+                                <span>Обычная ссылка</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="externalType" value="contact">
+                                <span>Форма обратной связи</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="externalUrlGroup">
+                        <label for="externalUrl">URL:</label>
+                        <input type="url" id="externalUrl" placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <div id="anchorTab" class="link-tab-content">
+                    <div class="form-group">
+                        <label for="anchorId">ID якоря:</label>
+                        <input type="text" id="anchorId" placeholder="section-name">
+                        <small>Используйте только латинские буквы, цифры и дефисы</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="linkText">Текст ссылки:</label>
+                    <input type="text" id="linkText" placeholder="Текст ссылки">
+                </div>
+
+                <div class="modal-actions">
+                    <button id="createLinkBtn" class="btn primary">Создать ссылку</button>
+                    <button class="btn secondary close-modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="admin-enhanced.js"></script>
+    <script>
+        // Добавляем обработчик для переключения типа внешней ссылки
+        document.addEventListener('DOMContentLoaded', function () {
+            const externalTypeRadios = document.querySelectorAll('input[name="externalType"]');
+            const externalUrlGroup = document.getElementById('externalUrlGroup');
+
+            externalTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function () {
+                    if (this.value === 'contact') {
+                        externalUrlGroup.style.display = 'none';
+                    } else {
+                        externalUrlGroup.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
