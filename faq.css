@@ -1,0 +1,22 @@
+.tariffs-desc {
+    padding: 0;
+}
+
+#faq .section-header {
+    margin-bottom: 1rem;
+}
+
+.tariffs-accordion {
+    gap: 1rem;
+}
+
+.tariff-name {
+    color: var(--color-text);
+    margin-bottom: 0;
+}
+
+@media(max-width: 768px) {
+    .tariff-brief {
+        flex: 1;
+    }
+}

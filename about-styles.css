@@ -1,0 +1,93 @@
+/* Дополнительные стили для страницы "О нас" */
+
+/* Стили для хлебных крошек */
+.breadcrumbs {
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+.breadcrumbs-list {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+.breadcrumbs-item {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
+}
+
+.breadcrumbs-link {
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.7));
+  text-decoration: none;
+  transition: color 0.3s ease, opacity 0.3s ease;
+  position: relative;
+}
+
+.breadcrumbs-link:hover {
+  color: var(--color-accent, #b3946f);
+  opacity: 0.9;
+}
+
+.breadcrumbs-separator {
+  display: flex;
+  align-items: center;
+  margin: 0 0.5rem;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.5));
+  opacity: 0.7;
+}
+
+.breadcrumbs-current {
+  color: var(--color-accent, #b3946f);
+  font-weight: 500;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .breadcrumbs {
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .breadcrumbs-item {
+    font-size: 0.8rem;
+  }
+
+  .breadcrumbs-separator {
+    margin: 0 0.3rem;
+  }
+
+  .breadcrumbs-separator svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* Стили для анимации счетчиков */
+.counter {
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+/* Дополнительные стили для улучшения читаемости */
+.description-text {
+  margin-bottom: 1.5rem;
+}
+
+.description-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Стили для активного пункта меню */
+.nav-list a[href="about.html"] {
+  color: var(--color-accent-light) !important;
+}
+
+.mobile-nav-link[href="about.html"] {
+  color: var(--color-accent-light) !important;
+}

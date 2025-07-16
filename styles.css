@@ -240,7 +240,6 @@ button {
 
 .glass-card:hover {
     border-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
@@ -491,7 +490,7 @@ button {
 /* Hero Section */
 .hero {
     position: relative;
-    padding: 90px 0 140px;
+    padding: 90px 0 30px;
     overflow: hidden;
 }
 
@@ -504,7 +503,7 @@ button {
     z-index: 1;
     max-width: 100%;
     margin-top: 2rem;
-    height: 280px;
+    /* height: 280px; */
 }
 
 .hero-title {
@@ -1310,9 +1309,6 @@ button {
 }
 
 /* Contact Section */
-#contacts .glass-card:hover {
-    transform: none;
-}
 
 .contacts {
     padding: 6rem 0;
@@ -1449,20 +1445,13 @@ button {
 
     .contact-form {
         max-width: 95%;
-        gap: 1rem;
+        gap: .5rem;
     }
 
     .contact-form-wrapper {
         padding: 0;
         align-items: center;
         padding: 1.5rem 0;
-    }
-}
-
-@media (max-height: 680px) {
-    .contact-form {
-        max-width: 95%;
-        gap: .5rem;
     }
 }
 
@@ -2505,7 +2494,7 @@ button {
     }
 
     .hero {
-        padding: 80px 0 100px;
+        padding: 80px 0 30px;
     }
 
     .hero-content {
@@ -2937,29 +2926,6 @@ button {
         min-width: unset;
         max-width: 95vw;
     }
-}
-
-/* Стили для текста согласия под кнопкой отправки */
-.form-submission-consent-text {
-    font-size: 0.75rem;
-    /* Маленький шрифт */
-    color: var(--color-text-muted);
-    /* Приглушенный цвет */
-    line-height: 1.5;
-    /* Межстрочный интервал для читаемости */
-    text-align: center;
-    /* Центрируем текст */
-    /* Убираем нижний отступ, если он не нужен */
-    padding: 0 0.5rem;
-    /* Небольшие боковые отступы, чтобы текст не прилипал к краям формы на узких экранах */
-}
-
-.form-submission-consent-text a.consent-link {
-    color: var(--color-accent-light);
-    /* Цвет ссылки */
-    text-decoration: underline;
-    /* Подчеркивание для ясности */
-    transition: color var(--transition-fast);
 }
 
 .form-submission-consent-text a.consent-link:hover {
