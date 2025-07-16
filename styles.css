@@ -1262,6 +1262,9 @@ button {
     margin-left: 0.5rem;
     transition: transform 0.3s ease;
 }
+#blogPagination .icon-right {
+    margin-left: 0;
+}
 
 .btn-benefits:hover .icon-right {
     transform: translateX(3px);
