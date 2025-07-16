@@ -1,4 +1,4 @@
-/* Современные стили для админ-панели */
+/* Современные стили для админ-панели с поддержкой новых функций */
 :root {
   --primary-color: #3b82f6;
   --primary-hover: #2563eb;
@@ -99,6 +99,7 @@ body {
 .admin-content {
   display: flex;
   gap: 30px;
+  align-items: flex-start;
 }
 
 .sidebar {
@@ -107,9 +108,10 @@ body {
   border-radius: 12px;
   padding: 25px;
   box-shadow: var(--shadow);
-  height: fit-content;
   position: sticky;
   top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 }
 
 .sidebar h3 {
@@ -126,7 +128,8 @@ body {
   box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  height: calc(100vh - 140px);
+  min-height: 600px;
 }
 
 /* Формы */
@@ -143,6 +146,7 @@ label {
 }
 
 input[type="text"],
+input[type="url"],
 input[type="datetime-local"],
 textarea,
 select {
@@ -156,6 +160,7 @@ select {
 }
 
 input[type="text"]:focus,
+input[type="url"]:focus,
 input[type="datetime-local"]:focus,
 textarea:focus,
 select:focus {
@@ -255,6 +260,7 @@ textarea {
 .title-input {
   padding: 25px 25px 15px;
   border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .post-title {
@@ -281,6 +287,10 @@ textarea {
   flex-wrap: wrap;
   gap: 10px;
   background: #fafafa;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
 .toolbar-group {
@@ -321,10 +331,9 @@ textarea {
   flex: 1;
   padding: 25px;
   overflow-y: auto;
-  min-height: 500px;
-  max-height: calc(100vh - 400px);
   font-size: 16px;
   line-height: 1.6;
+  min-height: 0;
 }
 
 .editor-content:focus {
@@ -359,8 +368,52 @@ textarea {
   padding-left: 24px;
 }
 
+/* ИСПРАВЛЕННЫЕ стили для вложенных списков */
+.editor-content ul ul,
+.editor-content ol ol,
+.editor-content ul ol,
+.editor-content ol ul {
+  margin: 8px 0;
+  padding-left: 30px;
+  /* Увеличиваем отступ для лучшей видимости */
+}
+
+.editor-content ul ul ul,
+.editor-content ol ol ol,
+.editor-content ul ol ul,
+.editor-content ol ul ol {
+  padding-left: 40px;
+  /* Еще больший отступ для третьего уровня */
+}
+
 .editor-content li {
   margin-bottom: 8px;
+  position: relative;
+}
+
+/* Улучшенные стили для маркеров вложенных списков */
+.editor-content ul li {
+  list-style-type: disc;
+}
+
+.editor-content ul ul li {
+  list-style-type: circle;
+}
+
+.editor-content ul ul ul li {
+  list-style-type: square;
+}
+
+.editor-content ol li {
+  list-style-type: decimal;
+}
+
+.editor-content ol ol li {
+  list-style-type: lower-alpha;
+}
+
+.editor-content ol ol ol li {
+  list-style-type: lower-roman;
 }
 
 .editor-content blockquote {
@@ -396,7 +449,20 @@ textarea {
   text-decoration: underline;
 }
 
-/* Загрузка изображений */
+/* ИСПРАВЛЕННЫЕ стили для якорей */
+.editor-content .anchor-point {
+  position: absolute !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  display: inline !important;
+}
+
+/* Улучшенные стили для загрузки изображений */
 .image-upload {
   position: relative;
   width: 100%;
@@ -405,6 +471,7 @@ textarea {
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .image-upload:hover {
@@ -443,7 +510,18 @@ textarea {
 #imagePreview.has-image {
   background-size: cover;
   background-position: center;
-  color: transparent;
+  border: 2px solid var(--primary-color);
+}
+
+#imagePreview.has-image .upload-placeholder {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+#imagePreview.has-image:hover .upload-placeholder {
+  opacity: 1;
 }
 
 /* Счетчик слов */
@@ -469,6 +547,30 @@ textarea {
   margin-bottom: 15px;
 }
 
+/* Поиск статей */
+.articles-search {
+  margin-bottom: 15px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
 .articles-list {
   max-height: 300px;
   overflow-y: auto;
@@ -480,6 +582,15 @@ textarea {
   border-radius: 8px;
   margin-bottom: 10px;
   background: #fafafa;
+  transition: all 0.2s ease;
+}
+
+.article-item.hidden {
+  display: none;
+}
+
+.article-item:hover {
+  background: #f0f0f0;
 }
 
 .article-info h4 {
@@ -560,6 +671,62 @@ textarea {
   padding: 25px;
 }
 
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: flex-end;
+}
+
+/* Стили для модального окна ссылок */
+.link-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.link-tab-btn {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.link-tab-btn.active {
+  border-bottom-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.link-tab-content {
+  display: none;
+}
+
+.link-tab-content.active {
+  display: block;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.radio-label input[type="radio"] {
+  width: auto;
+  margin: 0;
+}
+
 /* Предпросмотр публикации */
 .publish-preview {
   margin-bottom: 20px;
@@ -627,6 +794,11 @@ textarea {
   .sidebar {
     width: 100%;
     position: static;
+    max-height: none;
+  }
+
+  .editor-container {
+    height: 70vh;
   }
 }
 
@@ -658,6 +830,19 @@ textarea {
   .post-title {
     font-size: 24px;
   }
+
+  .editor-container {
+    height: 60vh;
+  }
+
+  .link-tabs {
+    flex-wrap: wrap;
+  }
+
+  .link-tab-btn {
+    flex: 1;
+    min-width: 120px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -669,5 +854,13 @@ textarea {
   .modal-header,
   .modal-body {
     padding: 15px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
   }
 }
