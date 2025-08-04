@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(updateWorkStatus, 60000);
 });
 
-// Функция инициализации слайдера услуг
+// ИСПРАВЛЕННАЯ функция инициализации слайдера услуг с предотвращением вертикального скролла
 function initServicesSlider() {
     const sliderTrack = document.querySelector('.services-slider-track');
     const sliderContainer = document.querySelector('.services-slider-container');
@@ -536,7 +536,6 @@ function initServicesSlider() {
     });
 
     createPagination();
-    // НЕ вызываем equalizeCardHeights() здесь, чтобы избежать раннего расчета высоты
 
     // Обработчик изменения размера окна
     window.addEventListener('resize', () => {
@@ -563,76 +562,102 @@ function initServicesSlider() {
 
     // Инициализация слайдера
     createPagination();
-    // НЕ вызываем equalizeCardHeights() здесь, чтобы избежать раннего расчета высоты
 
-    // Добавляем поддержку свайпов для мобильных устройств с анимацией
+    // ИСПРАВЛЕННАЯ ОБРАБОТКА СВАЙПОВ - предотвращает вертикальный скролл при горизонтальном свайпе
     let touchStartX = 0;
+    let touchStartY = 0;
     let touchEndX = 0;
+    let touchEndY = 0;
     let touchMoveX = 0;
     let initialOffset = 0;
     let isDragging = false;
+    let isHorizontalSwipe = false; // НОВАЯ ПЕРЕМЕННАЯ
 
     // Добавляем плавность анимации для слайдера
     sliderTrack.style.transition = 'transform 0.5s ease-out';
 
+    // Начало касания
     sliderContainer.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY; // ДОБАВЛЕНО
         initialOffset = currentIndex * 100;
         isDragging = true;
+        isHorizontalSwipe = false; // СБРОС ФЛАГА
 
         // Отключаем переход на время свайпа для мгновенной реакции
         sliderTrack.style.transition = 'none';
     }, { passive: true });
 
-    // Добавляем обработчик движения пальца
+    // ИСПРАВЛЕННЫЙ обработчик движения пальца
     sliderContainer.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
 
         touchMoveX = e.changedTouches[0].screenX;
-        const diff = touchStartX - touchMoveX;
-        const swipePercent = (diff / sliderContainer.offsetWidth) * 100;
+        const touchMoveY = e.changedTouches[0].screenY;
 
-        // Ограничиваем смещение, чтобы не уйти слишком далеко за пределы
-        const maxOffset = (totalSlides - 1) * 100;
-        let newOffset = initialOffset + swipePercent;
+        const diffX = Math.abs(touchStartX - touchMoveX);
+        const diffY = Math.abs(touchStartY - touchMoveY);
 
-        // Добавляем сопротивление при попытке свайпнуть за пределы
-        if (newOffset < 0) {
-            newOffset = newOffset / 3; // Сильное сопротивление при свайпе влево от первого слайда
-        } else if (newOffset > maxOffset) {
-            newOffset = maxOffset + (newOffset - maxOffset) / 3; // Сопротивление при свайпе вправо от последнего слайда
+        // Определяем направление свайпа только один раз в начале движения
+        if (!isHorizontalSwipe && (diffX > 10 || diffY > 10)) {
+            isHorizontalSwipe = diffX > diffY;
         }
 
-        // Применяем смещение к слайдеру
-        sliderTrack.style.transform = `translateX(-${newOffset}%)`;
-    }, { passive: true });
+        // Если это горизонтальный свайп, предотвращаем вертикальный скролл
+        if (isHorizontalSwipe) {
+            e.preventDefault(); // ПРЕДОТВРАЩАЕМ ТОЛЬКО ДЛЯ ГОРИЗОНТАЛЬНЫХ СВАЙПОВ
+
+            const diff = touchStartX - touchMoveX;
+            const swipePercent = (diff / sliderContainer.offsetWidth) * 100;
+
+            // Ограничиваем смещение, чтобы не уйти слишком далеко за пределы
+            const maxOffset = (totalSlides - 1) * 100;
+            let newOffset = initialOffset + swipePercent;
+
+            // Добавляем сопротивление при попытке свайпнуть за пределы
+            if (newOffset < 0) {
+                newOffset = newOffset / 3;
+            } else if (newOffset > maxOffset) {
+                newOffset = maxOffset + (newOffset - maxOffset) / 3;
+            }
+
+            // Применяем смещение к слайдеру
+            sliderTrack.style.transform = `translateX(-${newOffset}%)`;
+        }
+    }, { passive: false }); // ИЗМЕНЕНО НА passive: false
 
     sliderContainer.addEventListener('touchend', (e) => {
         if (!isDragging) return;
 
         touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
         isDragging = false;
 
         // Возвращаем плавную анимацию
         sliderTrack.style.transition = 'transform 0.5s ease-out';
 
-        // Вычисляем, насколько далеко был свайп
-        const diff = touchStartX - touchEndX;
-        const swipeThreshold = sliderContainer.offsetWidth * 0.2; // 20% ширины контейнера
+        // Обрабатываем только горизонтальные свайпы
+        if (isHorizontalSwipe) {
+            const diff = touchStartX - touchEndX;
+            const swipeThreshold = sliderContainer.offsetWidth * 0.2; // 20% ширины контейнера
 
-        if (Math.abs(diff) > swipeThreshold) {
-            // Свайп был достаточно сильным
-            if (diff > 0) {
-                // Свайп влево - следующий слайд
-                goToSlide(currentIndex + 1);
+            if (Math.abs(diff) > swipeThreshold) {
+                // Свайп был достаточно сильным
+                if (diff > 0) {
+                    // Свайп влево - следующий слайд
+                    goToSlide(currentIndex + 1);
+                } else {
+                    // Свайп вправо - предыдущий слайд
+                    goToSlide(currentIndex - 1);
+                }
             } else {
-                // Свайп вправо - предыдущий слайд
-                goToSlide(currentIndex - 1);
+                // Свайп был недостаточно сильным, возвращаемся к текущему слайду
+                goToSlide(currentIndex);
             }
-        } else {
-            // Свайп был недостаточно сильным, возвращаемся к текущему слайду
-            goToSlide(currentIndex);
         }
+
+        // Сбрасываем флаги
+        isHorizontalSwipe = false; // СБРОС ФЛАГА
     }, { passive: true });
 
     // Добавляем обработчик для отмены свайпа при уходе пальца за пределы контейнера
@@ -640,6 +665,7 @@ function initServicesSlider() {
         if (!isDragging) return;
 
         isDragging = false;
+        isHorizontalSwipe = false; // СБРОС ФЛАГА
         sliderTrack.style.transition = 'transform 0.5s ease-out';
         goToSlide(currentIndex);
     }, { passive: true });
