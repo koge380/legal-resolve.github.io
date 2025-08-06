@@ -159,9 +159,6 @@
 }
 
 /* Стили для сетки тарифов и минималистичной информации */
-.service-card {
-    margin: 0;
-}
 
 .tariffs-grid {
     display: grid;
@@ -220,7 +217,7 @@
 }
 
 .individual-card {
-    margin-bottom: 3rem;
+    margin: 2rem 0;
 }
 
 /* Адаптивность для мобильных устройств */
@@ -816,5 +813,11 @@
     .approach-icon {
         width: 4rem;
         height: 4rem;
+    }
+}
+
+@media (min-width: 1025px) {
+    .services-slider-controls {
+        display: none;
     }
 }
