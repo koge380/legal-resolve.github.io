@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(updateWorkStatus, 60000);
 });
 
-// ИСПРАВЛЕННАЯ функция инициализации слайдера услуг с предотвращением вертикального скролла
+// УЛУЧШЕННАЯ функция инициализации слайд��ра услуг с точным определением направления свайпа
 function initServicesSlider() {
     const sliderTrack = document.querySelector('.services-slider-track');
     const sliderContainer = document.querySelector('.services-slider-container');
@@ -563,51 +563,70 @@ function initServicesSlider() {
     // Инициализация слайдера
     createPagination();
 
-    // ИСПРАВЛЕННАЯ ОБРАБОТКА СВАЙПОВ - предотвращает вертикальный скролл при горизонтальном свайпе
+    // УЛУЧШЕННАЯ ОБРАБОТКА СВАЙПОВ с точным определением направления
     let touchStartX = 0;
     let touchStartY = 0;
     let touchEndX = 0;
     let touchEndY = 0;
-    let touchMoveX = 0;
     let initialOffset = 0;
     let isDragging = false;
-    let isHorizontalSwipe = false; // НОВАЯ ПЕРЕМЕННАЯ
+    let swipeDirection = null; // 'horizontal', 'vertical', или null
+    let isSwipeActive = false;
+
+    // Константы для определения направления
+    const MIN_SWIPE_DISTANCE = 15; // Минимальное расстояние для определения направления
+    const DIRECTION_THRESHOLD = 1.5; // Коэффициент преобладания направления
+    const SWIPE_ACTIVATION_DISTANCE = 25; // Минимальное расстояние для активации свайпа
 
     // Добавляем плавность анимации для слайдера
     sliderTrack.style.transition = 'transform 0.5s ease-out';
 
     // Начало касания
     sliderContainer.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY; // ДОБАВЛЕНО
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
         initialOffset = currentIndex * 100;
         isDragging = true;
-        isHorizontalSwipe = false; // СБРОС ФЛАГА
+        swipeDirection = null;
+        isSwipeActive = false;
 
         // Отключаем переход на время свайпа для мгновенной реакции
         sliderTrack.style.transition = 'none';
     }, { passive: true });
 
-    // ИСПРАВЛЕННЫЙ обработчик движения пальца
+    // КЛЮЧЕВАЯ ЛОГИКА: Улучшенное определение направления движения
     sliderContainer.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
 
-        touchMoveX = e.changedTouches[0].screenX;
-        const touchMoveY = e.changedTouches[0].screenY;
+        const currentX = e.changedTouches[0].clientX;
+        const currentY = e.changedTouches[0].clientY;
 
-        const diffX = Math.abs(touchStartX - touchMoveX);
-        const diffY = Math.abs(touchStartY - touchMoveY);
+        const diffX = Math.abs(touchStartX - currentX);
+        const diffY = Math.abs(touchStartY - currentY);
+        const totalDistance = Math.sqrt(diffX * diffX + diffY * diffY);
 
-        // Определяем направление свайпа только один раз в начале движения
-        if (!isHorizontalSwipe && (diffX > 10 || diffY > 10)) {
-            isHorizontalSwipe = diffX > diffY;
+        // Определяем направление только после минимального движения
+        if (swipeDirection === null && totalDistance > MIN_SWIPE_DISTANCE) {
+            // Проверяем, какое направление преобладает с учетом порога
+            if (diffX > diffY * DIRECTION_THRESHOLD) {
+                swipeDirection = 'horizontal';
+            } else if (diffY > diffX * DIRECTION_THRESHOLD) {
+                swipeDirection = 'vertical';
+            }
+            // Если направления примерно равны, оставляем null (не определено)
         }
 
-        // Если это горизонтальный свайп, предотвращаем вертикальный скролл
-        if (isHorizontalSwipe) {
-            e.preventDefault(); // ПРЕДОТВРАЩАЕМ ТОЛЬКО ДЛЯ ГОРИЗОНТАЛЬНЫХ СВАЙПОВ
+        // Активируем свайп только после достижения минимального расстояния
+        if (!isSwipeActive && totalDistance > SWIPE_ACTIVATION_DISTANCE) {
+            isSwipeActive = true;
+        }
 
-            const diff = touchStartX - touchMoveX;
+        // Обрабатываем только горизонтальные свайпы
+        if (swipeDirection === 'horizontal' && isSwipeActive) {
+            // ВАЖНО: предотвращаем вертикальный скролл только для горизонтальных свайпов
+            e.preventDefault();
+
+            const diff = touchStartX - currentX;
             const swipePercent = (diff / sliderContainer.offsetWidth) * 100;
 
             // Ограничиваем смещение, чтобы не уйти слишком далеко за пределы
@@ -624,20 +643,23 @@ function initServicesSlider() {
             // Применяем смещение к слайдеру
             sliderTrack.style.transform = `translateX(-${newOffset}%)`;
         }
-    }, { passive: false }); // ИЗМЕНЕНО НА passive: false
+        // Для вертикальных свайпов или неопределенного направления - ничего не делаем
+        // Браузер сам обработает вертикальный скролл
+    }, { passive: false }); // ВАЖНО: passive: false для возможности вызова preventDefault()
 
+    // Окончание касания
     sliderContainer.addEventListener('touchend', (e) => {
         if (!isDragging) return;
 
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
         isDragging = false;
 
         // Возвращаем плавную анимацию
         sliderTrack.style.transition = 'transform 0.5s ease-out';
 
-        // Обрабатываем только горизонтальные свайпы
-        if (isHorizontalSwipe) {
+        // Обрабатываем завершение только для горизонтальных свайпов
+        if (swipeDirection === 'horizontal' && isSwipeActive) {
             const diff = touchStartX - touchEndX;
             const swipeThreshold = sliderContainer.offsetWidth * 0.2; // 20% ширины контейнера
 
@@ -654,10 +676,14 @@ function initServicesSlider() {
                 // Свайп был недостаточно сильным, возвращаемся к текущему слайду
                 goToSlide(currentIndex);
             }
+        } else {
+            // Для вертикальных свайпов или неопределенного направления возвращаемся к текущему слайду
+            goToSlide(currentIndex);
         }
 
-        // Сбрасываем флаги
-        isHorizontalSwipe = false; // СБРОС ФЛАГА
+        // Сбрасываем состояние
+        swipeDirection = null;
+        isSwipeActive = false;
     }, { passive: true });
 
     // Добавляем обработчик для отмены свайпа при уходе пальца за пределы контейнера
@@ -665,7 +691,8 @@ function initServicesSlider() {
         if (!isDragging) return;
 
         isDragging = false;
-        isHorizontalSwipe = false; // СБРОС ФЛАГА
+        swipeDirection = null;
+        isSwipeActive = false;
         sliderTrack.style.transition = 'transform 0.5s ease-out';
         goToSlide(currentIndex);
     }, { passive: true });
@@ -710,13 +737,6 @@ document.addEventListener('DOMContentLoaded', function () {
             contactModal.classList.remove('active');
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
-        }
-    }
-    // Закрытие по кнопке или overlay
-    function closeContactModal() {
-        if (contactModal) {
-            contactModal.classList.remove('active');
-            document.body.style.overflow = '';
         }
     }
 
