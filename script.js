@@ -1,207 +1,117 @@
-/**
- * Refactor script.js(main) JavaScript Module
- * @version 1.0.0
- * @description Main functionality for index html and slider including navigation, forms, sliders, and animations
- */
+document.addEventListener('DOMContentLoaded', function () {
+    // Set current year in footer
+    const currentYearElement = document.getElementById('currentYear');
+    if (currentYearElement) {
+        currentYearElement.textContent = new Date().getFullYear();
+    }
 
-(function (window, document) {
-    'use strict';
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
 
-    // Configuration constants
-    const CONFIG = {
-        BREAKPOINTS: {
-            MOBILE: 768,
-            TABLET: 1024
-        },
-        ANIMATION: {
-            SCROLL_THRESHOLD: 50,
-            COUNTER_SPEED: 200,
-            SLIDER_TRANSITION: 500
-        },
-        WORKING_HOURS: {
-            START: 9,
-            END: 21
-        },
-        SWIPE: {
-            MIN_DISTANCE: 15,
-            DIRECTION_THRESHOLD: 1.5,
-            ACTIVATION_DISTANCE: 25,
-            SWIPE_THRESHOLD: 0.2
-        },
-        MESSAGES: {
-            FORM_SUCCESS: 'Thank you! Your request has been sent. We will contact you shortly.',
-            VALIDATION_ERROR: 'Please fill in all required fields correctly.'
-        }
-    };
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function () {
+            this.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.classList.toggle('menu-open');
+        });
 
-    // Utility functions
-    const Utils = {
-        /**
-         * Debounce function to limit function calls
-         * @param {Function} func - Function to debounce
-         * @param {number} wait - Wait time in milliseconds
-         * @returns {Function} Debounced function
-         */
-        debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        },
+        // Close mobile menu when clicking on a link
+        const mobileNavLinks = document.querySelectorAll('.mobile-nav-link:not(.mobile-dropdown-toggle):not(.mobile-dropdown-toggle-submenu)');
+        mobileNavLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.classList.remove('menu-open');
+            });
+        });
+    }
 
-        /**
-         * Get scrollbar width
-         * @returns {number} Scrollbar width in pixels
-         */
-        getScrollbarWidth() {
-            return window.innerWidth - document.documentElement.clientWidth;
-        },
-
-        /**
-         * Check if element is in viewport
-         * @param {HTMLElement} element - Element to check
-         * @returns {boolean} True if element is visible
-         */
-        isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top < window.innerHeight &&
-                rect.bottom > 0
-            );
-        },
-
-        /**
-         * Log messages with timestamp
-         * @param {string} level - Log level (info, warn, error)
-         * @param {string} message - Message to log
-         * @param {*} data - Additional data to log
-         */
-        log(level, message, data = null) {
-            if (typeof console !== 'undefined') {
-                const timestamp = new Date().toISOString();
-                const logMessage = `[${timestamp}] ${message}`;
-
-                switch (level) {
-                    case 'error':
-                        console.error(logMessage, data);
-                        break;
-                    case 'warn':
-                        console.warn(logMessage, data);
-                        break;
-                    default:
-                        console.log(logMessage, data);
-                }
+    // Dynamically show/hide mobileMenuBtn based on screen size
+    const updateMobileMenuBtnVisibility = () => {
+        if (mobileMenuBtn) {
+            if (window.innerWidth <= 1024) {
+                mobileMenuBtn.style.display = 'flex';
+            } else {
+                mobileMenuBtn.style.display = 'none';
             }
         }
     };
 
-    // Form validation module
-    const FormValidator = {
-        /**
-         * Validate form fields
-         * @param {Object} fields - Object containing form fields
-         * @returns {boolean} True if all fields are valid
-         */
-        validateFields(fields) {
+    // Initial check and add resize listener
+    updateMobileMenuBtnVisibility();
+    window.addEventListener('resize', updateMobileMenuBtnVisibility);
+
+    // Header scroll effect
+    const header = document.querySelector('.header');
+    let lastScrollTop = 0;
+
+    window.addEventListener('scroll', function () {
+        if (header) {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+            if (scrollTop > 50) {
+                header.style.backgroundColor = 'rgba(10, 10, 18, 0.95)';
+            } else {
+                header.style.backgroundColor = 'rgba(10, 10, 18, 0.8)';
+            }
+
+            lastScrollTop = scrollTop;
+        }
+    });
+
+    // Form validation
+    const contactForm = document.getElementById('contactForm');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const nameInput = document.getElementById('name');
+            const phoneInput = document.getElementById('phone');
+            const messageInput = document.getElementById('message');
+            const consentInput = document.getElementById('consent');
+
             let isValid = true;
 
-            Object.entries(fields).forEach(([key, field]) => {
-                if (!field.element) {
-                    Utils.log('warn', `Form field element not found: ${key}`);
-                    return;
-                }
-
-                const value = field.element.value.trim();
-                let fieldValid = true;
-
-                // Required field validation
-                if (field.required && !value) {
-                    fieldValid = false;
-                }
-
-                // Phone validation
-                if (field.type === 'phone' && value && !this.isValidPhone(value)) {
-                    fieldValid = false;
-                }
-
-                // Email validation
-                if (field.type === 'email' && value && !this.isValidEmail(value)) {
-                    fieldValid = false;
-                }
-
-                // Checkbox validation
-                if (field.type === 'checkbox' && field.required && !field.element.checked) {
-                    fieldValid = false;
-                }
-
-                // Apply visual feedback
-                this.setFieldValidation(field.element, fieldValid, field.type);
-
-                if (!fieldValid) {
-                    isValid = false;
-                }
-            });
-
-            return isValid;
-        },
-
-        /**
-         * Set visual validation feedback for field
-         * @param {HTMLElement} element - Form field element
-         * @param {boolean} isValid - Whether field is valid
-         * @param {string} type - Field type
-         */
-        setFieldValidation(element, isValid, type) {
-            try {
-                if (type === 'checkbox') {
-                    element.style.outline = isValid ? '' : '2px solid var(--color-accent, #ff0000)';
-                } else {
-                    element.style.borderColor = isValid ? '' : 'var(--color-accent, #ff0000)';
-                }
-            } catch (error) {
-                Utils.log('error', 'Error setting field validation', error);
+            // Simple validation
+            if (!nameInput.value.trim()) {
+                nameInput.style.borderColor = 'var(--color-accent)';
+                isValid = false;
+            } else {
+                nameInput.style.borderColor = '';
             }
-        },
 
-        /**
-         * Validate phone number format
-         * @param {string} phone - Phone number to validate
-         * @returns {boolean} True if valid
-         */
-        isValidPhone(phone) {
-            const phoneRegex = /^\+7\s$$\d{3}$$\s\d{3}-\d{2}-\d{2}$/;
-            return phoneRegex.test(phone);
-        },
+            if (!phoneInput.value.trim()) {
+                phoneInput.style.borderColor = 'var(--color-accent)';
+                isValid = false;
+            } else {
+                phoneInput.style.borderColor = '';
+            }
 
-        /**
-         * Validate email format
-         * @param {string} email - Email to validate
-         * @returns {boolean} True if valid
-         */
-        isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
-        }
-    };
+            if (!consentInput.checked) {
+                consentInput.style.outline = '2px solid var(--color-accent)';
+                isValid = false;
+            } else {
+                consentInput.style.outline = '';
+            }
 
-    // Phone input formatter
-    const PhoneFormatter = {
-        /**
-         * Format phone input with Russian phone mask
-         * @param {HTMLInputElement} input - Phone input element
-         */
-        format(input) {
-            if (!input) return;
+            if (isValid) {
+                // In a real application, you would send the form data to the server here
+                alert('Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
+                contactForm.reset();
+            }
+        });
+    }
 
-            let value = input.value.replace(/\D/g, '');
+    // Phone input mask
+    const phoneInput = document.getElementById('phone');
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
 
             if (value.length > 0) {
-                // Handle different starting digits
                 if (value[0] === '7') {
                     value = value;
                 } else if (value[0] === '8') {
@@ -210,697 +120,648 @@
                     value = '7' + value;
                 }
 
-                // Format the number
-                let formatted = '+';
-                if (value.length > 0) formatted += value.substring(0, 1);
-                if (value.length > 1) formatted += ' (' + value.substring(1, 4);
-                if (value.length > 4) formatted += ') ' + value.substring(4, 7);
-                if (value.length > 7) formatted += '-' + value.substring(7, 9);
-                if (value.length > 9) formatted += '-' + value.substring(9, 11);
+                let formattedValue = '+';
 
-                input.value = formatted;
+                if (value.length > 0) {
+                    formattedValue += value.substring(0, 1);
+                }
+
+                if (value.length > 1) {
+                    formattedValue += ' (' + value.substring(1, 4);
+                }
+
+                if (value.length > 4) {
+                    formattedValue += ') ' + value.substring(4, 7);
+                }
+
+                if (value.length > 7) {
+                    formattedValue += '-' + value.substring(7, 9);
+                }
+
+                if (value.length > 9) {
+                    formattedValue += '-' + value.substring(9, 11);
+                }
+
+                e.target.value = formattedValue;
             }
-        }
-    };
+        });
+    }
+    // Form validation для модального окна
+    const modalContactForm = document.getElementById('modalContactForm');
+    if (modalContactForm) {
+        modalContactForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-    // Navigation module
-    const Navigation = {
-        init() {
-            this.initMobileMenu();
-            this.initMegaDropdown();
-            this.initSmoothScroll();
-            this.initHeaderScroll();
-        },
+            const nameInput = document.getElementById('modalName');
+            const phoneInput = document.getElementById('modalPhone');
+            const messageInput = document.getElementById('modalMessage');
+            const consentInput = document.getElementById('modalConsent');
 
-        /**
-         * Initialize mobile menu functionality
-         */
-        initMobileMenu() {
-            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
+            let isValid = true;
 
-            if (!mobileMenuBtn || !mobileMenu) {
-                Utils.log('warn', 'Mobile menu elements not found');
-                return;
+            if (!nameInput.value.trim()) {
+                nameInput.style.borderColor = 'var(--color-accent)';
+                isValid = false;
+            } else {
+                nameInput.style.borderColor = '';
             }
 
-            // Toggle mobile menu
-            mobileMenuBtn.addEventListener('click', () => {
-                this.toggleMobileMenu(mobileMenuBtn, mobileMenu);
-            });
+            if (!phoneInput.value.trim()) {
+                phoneInput.style.borderColor = 'var(--color-accent)';
+                isValid = false;
+            } else {
+                phoneInput.style.borderColor = '';
+            }
 
-            // Close menu on link click
-            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link:not(.mobile-dropdown-toggle):not(.mobile-dropdown-toggle-submenu)');
-            mobileNavLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    this.closeMobileMenu(mobileMenuBtn, mobileMenu);
-                });
-            });
+            if (!consentInput.checked) {
+                consentInput.style.outline = '2px solid var(--color-accent)';
+                isValid = false;
+            } else {
+                consentInput.style.outline = '';
+            }
 
-            // Handle mobile menu visibility on resize
-            const updateVisibility = Utils.debounce(() => {
-                if (window.innerWidth <= CONFIG.BREAKPOINTS.TABLET) {
-                    mobileMenuBtn.style.display = 'flex';
+            if (isValid) {
+                alert('Спасибо! Ваша заявка отправлена. Мы свяжемся с вами в ближайшее время.');
+                modalContactForm.reset();
+            }
+        });
+    }
+
+    // Phone input mask для модального окна
+    const modalPhoneInput = document.getElementById('modalPhone');
+    if (modalPhoneInput) {
+        modalPhoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+
+            if (value.length > 0) {
+                if (value[0] === '7') {
+                    value = value;
+                } else if (value[0] === '8') {
+                    value = '7' + value.substring(1);
                 } else {
-                    mobileMenuBtn.style.display = 'none';
-                    this.closeMobileMenu(mobileMenuBtn, mobileMenu);
+                    value = '7' + value;
                 }
-            }, 250);
 
-            window.addEventListener('resize', updateVisibility);
-            updateVisibility(); // Initial call
-        },
+                let formattedValue = '+';
 
-        /**
-         * Toggle mobile menu state
-         * @param {HTMLElement} btn - Menu button
-         * @param {HTMLElement} menu - Menu element
-         */
-        toggleMobileMenu(btn, menu) {
-            btn.classList.toggle('active');
-            menu.classList.toggle('active');
-            document.body.classList.toggle('menu-open');
-        },
-
-        /**
-         * Close mobile menu
-         * @param {HTMLElement} btn - Menu button
-         * @param {HTMLElement} menu - Menu element
-         */
-        closeMobileMenu(btn, menu) {
-            btn.classList.remove('active');
-            menu.classList.remove('active');
-            document.body.classList.remove('menu-open');
-        },
-
-        /**
-         * Initialize mega dropdown functionality
-         */
-        initMegaDropdown() {
-            const trigger = document.querySelector('.services-dropdown-trigger');
-            const parent = document.querySelector('.nav-item.has-mega-dropdown');
-            const categoryItems = document.querySelectorAll('.mega-category-item');
-            const contentSections = document.querySelectorAll('.mega-content-section');
-
-            if (!trigger || !parent) return;
-
-            // Toggle dropdown
-            trigger.addEventListener('click', (e) => {
-                e.preventDefault();
-                parent.classList.toggle('active');
-            });
-
-            // Close on outside click
-            document.addEventListener('click', (e) => {
-                if (!parent.contains(e.target)) {
-                    parent.classList.remove('active');
+                if (value.length > 0) {
+                    formattedValue += value.substring(0, 1);
                 }
-            });
 
-            // Handle category hover
-            categoryItems.forEach(item => {
-                item.addEventListener('mouseenter', () => {
-                    this.handleCategoryHover(item, categoryItems, contentSections);
+                if (value.length > 1) {
+                    formattedValue += ' (' + value.substring(1, 4);
+                }
+
+                if (value.length > 4) {
+                    formattedValue += ') ' + value.substring(4, 7);
+                }
+
+                if (value.length > 7) {
+                    formattedValue += '-' + value.substring(7, 9);
+                }
+
+                if (value.length > 9) {
+                    formattedValue += '-' + value.substring(9, 11);
+                }
+
+                e.target.value = formattedValue;
+            }
+        });
+    }
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute('href');
+
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+
+            if (targetElement) {
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
                 });
-            });
-        },
+            }
+        });
+    });
 
-        /**
-         * Handle mega dropdown category hover
-         * @param {HTMLElement} item - Hovered category item
-         * @param {NodeList} allItems - All category items
-         * @param {NodeList} contentSections - All content sections
-         */
-        handleCategoryHover(item, allItems, contentSections) {
-            // Remove active class from all items
-            allItems.forEach(cat => cat.classList.remove('active'));
+    // Animate elements on scroll
+    const animateElements = document.querySelectorAll('.service-card, .benefit-card, .stat-card');
 
-            if (item.classList.contains('has-submenu')) {
+    function checkIfInView() {
+        animateElements.forEach(element => {
+            const elementTop = element.getBoundingClientRect().top;
+            const elementBottom = element.getBoundingClientRect().bottom;
+            const isVisible = (elementTop < window.innerHeight) && (elementBottom > 0);
+
+            if (isVisible) {
+                element.classList.add('fade-in');
+            }
+        });
+    }
+
+    // Check on load
+    checkIfInView();
+
+    // Check on scroll
+    window.addEventListener('scroll', checkIfInView);
+
+    // Mega Dropdown Menu functionality
+    const servicesDropdownTrigger = document.querySelector('.services-dropdown-trigger');
+    const megaDropdownParent = document.querySelector('.nav-item.has-mega-dropdown');
+    const megaCategoryItems = document.querySelectorAll('.mega-category-item');
+    const megaContentSections = document.querySelectorAll('.mega-content-section');
+    const megaDropdownContent = document.querySelector('.mega-dropdown-content');
+    const megaDropdownCategories = document.querySelector('.mega-dropdown-categories');
+
+
+    if (servicesDropdownTrigger && megaDropdownParent) {
+        // Toggle mega dropdown on click
+        servicesDropdownTrigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            megaDropdownParent.classList.toggle('active');
+
+        });
+
+        // Close mega dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!megaDropdownParent.contains(e.target)) {
+                megaDropdownParent.classList.remove('active');
+            }
+        });
+    }
+
+    // Handle mega category item interactions
+    megaCategoryItems.forEach(item => {
+        item.addEventListener('mouseenter', function () {
+            // Fixed: Remove active class from all category items first
+            megaCategoryItems.forEach(cat => cat.classList.remove('active'));
+
+            const hasSubmenu = item.classList.contains('has-submenu');
+
+            if (hasSubmenu) {
+                // Add active class to current item
                 item.classList.add('active');
+
+                // Get category data attribute
                 const category = item.dataset.category;
 
                 // Hide all content sections
-                contentSections.forEach(section => section.classList.remove('active'));
+                megaContentSections.forEach(section => section.classList.remove('active'));
 
-                // Show relevant content
+                // Show content section for current category
                 if (category) {
                     const contentSection = document.querySelector(`.mega-content-section[data-category="${category}"]`);
                     if (contentSection) {
                         contentSection.classList.add('active');
+                        megaDropdownContent.classList.add('active');
+                        megaDropdownCategories.classList.add('active');
+
                     }
                 }
-            }
-        },
 
-        /**
-         * Initialize smooth scrolling for anchor links
-         */
-        initSmoothScroll() {
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const targetId = anchor.getAttribute('href');
-
-                    if (targetId === '#') return;
-
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        const header = document.querySelector('.header');
-                        const headerHeight = header ? header.offsetHeight : 0;
-                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-
-                        window.scrollTo({
-                            top: targetPosition,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-        },
-
-        /**
-         * Initialize header scroll effects
-         */
-        initHeaderScroll() {
-            const header = document.querySelector('.header');
-            if (!header) return;
-
-            const handleScroll = Utils.debounce(() => {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-
-                if (scrollTop > CONFIG.ANIMATION.SCROLL_THRESHOLD) {
-                    header.style.backgroundColor = 'rgba(10, 10, 18, 0.95)';
-                } else {
-                    header.style.backgroundColor = 'rgba(10, 10, 18, 0.8)';
-                }
-            }, 10);
-
-            window.addEventListener('scroll', handleScroll);
-        }
-    };
-
-    // Forms module
-    const Forms = {
-        init() {
-            this.initContactForm();
-            this.initModalForm();
-            this.initPhoneInputs();
-        },
-
-        /**
-         * Initialize main contact form
-         */
-        initContactForm() {
-            const form = document.getElementById('contactForm');
-            if (!form) return;
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleFormSubmit(form, {
-                    name: { element: document.getElementById('name'), required: true },
-                    phone: { element: document.getElementById('phone'), required: true, type: 'phone' },
-                    message: { element: document.getElementById('message'), required: false },
-                    consent: { element: document.getElementById('consent'), required: true, type: 'checkbox' }
-                });
-            });
-        },
-
-        /**
-         * Initialize modal contact form
-         */
-        initModalForm() {
-            const form = document.getElementById('modalContactForm');
-            if (!form) return;
-
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleFormSubmit(form, {
-                    name: { element: document.getElementById('modalName'), required: true },
-                    phone: { element: document.getElementById('modalPhone'), required: true, type: 'phone' },
-                    message: { element: document.getElementById('modalMessage'), required: false },
-                    consent: { element: document.getElementById('modalConsent'), required: true, type: 'checkbox' }
-                });
-            });
-        },
-
-        /**
-         * Handle form submission
-         * @param {HTMLFormElement} form - Form element
-         * @param {Object} fields - Form fields configuration
-         */
-        handleFormSubmit(form, fields) {
-            try {
-                const isValid = FormValidator.validateFields(fields);
-
-                if (isValid) {
-                    // Here you would typically send data to server
-                    this.showSuccessMessage();
-                    form.reset();
-                    Utils.log('info', 'Form submitted successfully');
-                } else {
-                    Utils.log('warn', 'Form validation failed');
-                }
-            } catch (error) {
-                Utils.log('error', 'Error handling form submission', error);
-            }
-        },
-
-        /**
-         * Show success message
-         */
-        showSuccessMessage() {
-            // Using a more professional approach instead of alert
-            if (window.showNotification) {
-                window.showNotification(CONFIG.MESSAGES.FORM_SUCCESS, 'success');
             } else {
-                alert(CONFIG.MESSAGES.FORM_SUCCESS);
+                // Hide content when hovering over item without submenu
+                megaContentSections.forEach(section => section.classList.remove('active'));
+                megaDropdownContent.classList.remove('active');
+                megaDropdownCategories.classList.remove('active');
             }
-        },
+        });
+    });
 
-        /**
-         * Initialize phone input formatting
-         */
-        initPhoneInputs() {
-            const phoneInputs = document.querySelectorAll('#phone, #modalPhone');
-            phoneInputs.forEach(input => {
-                if (input) {
-                    input.addEventListener('input', () => {
-                        PhoneFormatter.format(input);
-                    });
+    // Mobile dropdown toggles
+    const mobileDropdownToggles = document.querySelectorAll('.mobile-dropdown-toggle');
+    mobileDropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            const parent = this.closest('.mobile-dropdown');
+
+            // Close other open dropdowns at the same level
+            const siblings = document.querySelectorAll('.mobile-dropdown.active');
+            siblings.forEach(sibling => {
+                if (sibling !== parent) {
+                    sibling.classList.remove('active');
                 }
             });
-        }
-    };
 
-    // Animations module
-    const Animations = {
-        init() {
-            this.initScrollAnimations();
-            this.initCounters();
-            this.initWorkStatus();
-        },
+            parent.classList.toggle('active');
+        });
+    });
 
-        /**
-         * Initialize scroll-based animations
-         */
-        initScrollAnimations() {
-            const animateElements = document.querySelectorAll('.service-card, .benefit-card, .stat-card');
+    // Mobile submenu dropdown toggles
+    const mobileSubmenuToggles = document.querySelectorAll('.mobile-dropdown-toggle-submenu');
+    mobileSubmenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            const parent = this.closest('.mobile-dropdown-submenu');
 
-            const checkVisibility = Utils.debounce(() => {
-                animateElements.forEach(element => {
-                    if (Utils.isInViewport(element)) {
-                        element.classList.add('fade-in');
-                    }
-                });
-            }, 50);
-
-            window.addEventListener('scroll', checkVisibility);
-            checkVisibility(); // Initial check
-        },
-
-        /**
-         * Initialize counter animations
-         */
-        initCounters() {
-            const counters = document.querySelectorAll('.counter');
-
-            counters.forEach(counter => {
-                const target = parseInt(counter.getAttribute('data-target'), 10);
-                if (isNaN(target)) return;
-
-                const increment = target / CONFIG.ANIMATION.COUNTER_SPEED;
-                let current = 0;
-
-                const updateCounter = () => {
-                    if (current < target) {
-                        current = Math.min(current + increment, target);
-                        counter.textContent = Math.ceil(current);
-                        requestAnimationFrame(updateCounter);
-                    } else {
-                        counter.textContent = target;
-                    }
-                };
-
-                // Start animation with delay
-                setTimeout(updateCounter, 500);
-            });
-        },
-
-        /**
-         * Initialize and update work status
-         */
-        initWorkStatus() {
-            const updateStatus = () => {
-                const statusText = document.querySelector('.status-text');
-                if (!statusText) return;
-
-                const now = new Date();
-                const hours = now.getHours();
-                const isWorking = hours >= CONFIG.WORKING_HOURS.START && hours < CONFIG.WORKING_HOURS.END;
-
-                statusText.textContent = isWorking ? 'Currently working' : 'Currently closed';
-            };
-
-            updateStatus();
-            setInterval(updateStatus, 60000); // Update every minute
-        }
-    };
-
-    // Modal module
-    const Modal = {
-        init() {
-            this.initContactModal();
-        },
-
-        /**
-         * Initialize contact modal
-         */
-        initContactModal() {
-            const modal = document.getElementById('contact-modal');
-            const closeBtn = document.querySelector('.contact-modal-close');
-            const overlay = document.querySelector('.contact-modal-overlay');
-
-            if (!modal) return;
-
-            // Open modal triggers
-            document.querySelectorAll('[data-modal="contact-modal"]').forEach(trigger => {
-                trigger.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    this.openModal(modal);
-                });
-            });
-
-            // Close modal triggers
-            if (closeBtn) {
-                closeBtn.addEventListener('click', () => this.closeModal(modal));
-            }
-            if (overlay) {
-                overlay.addEventListener('click', () => this.closeModal(modal));
-            }
-
-            // ESC key handler
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    this.closeModal(modal);
+            // Close other open submenus at the same level
+            const siblings = document.querySelectorAll('.mobile-dropdown-submenu.active');
+            siblings.forEach(sibling => {
+                if (sibling !== parent) {
+                    sibling.classList.remove('active');
                 }
             });
-        },
 
-        /**
-         * Open modal
-         * @param {HTMLElement} modal - Modal element
-         */
-        openModal(modal) {
-            modal.classList.add('active');
-            const scrollBarWidth = Utils.getScrollbarWidth();
+            parent.classList.toggle('active');
+        });
+    });
+
+    // Анимация счетчиков
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200; // Скорость анимации (меньше = быстрее)
+
+    counters.forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        const increment = target / speed;
+
+        const updateCount = () => {
+            const count = +counter.innerText;
+
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(updateCount, 30);
+            } else {
+                counter.innerText = target;
+            }
+        };
+
+        // Запускаем анимацию с небольшой задержкой
+        setTimeout(updateCount, 500);
+    });
+
+    // Функция для обновления текста статуса работы
+    function updateWorkStatus() {
+        const statusText = document.querySelector('.status-text');
+
+        if (!statusText) return;
+
+        const now = new Date();
+        const hours = now.getHours();
+
+        // Проверяем, рабочее ли сейчас время (9:00 - 21:00)
+        if (hours >= 9 && hours < 21) {
+            statusText.textContent = 'Сейчас работаем';
+        } else {
+            statusText.textContent = 'Сейчас не работаем';
+        }
+    }
+
+    // Обновляем статус при загрузке страницы
+    updateWorkStatus();
+
+    // Обновляем статус каждую минуту
+    setInterval(updateWorkStatus, 60000);
+});
+
+// УЛУЧШЕННАЯ функция инициализации слайд��ра услуг с точным определением направления свайпа
+function initServicesSlider() {
+    const sliderTrack = document.querySelector('.services-slider-track');
+    const sliderContainer = document.querySelector('.services-slider-container');
+    const prevButton = document.querySelector('.slider-prev');
+    const nextButton = document.querySelector('.slider-next');
+    const paginationContainer = document.querySelector('.slider-pagination');
+
+    if (!sliderTrack || !sliderContainer || !prevButton || !nextButton || !paginationContainer) return;
+
+    // Получаем все карточки услуг
+    const cards = Array.from(sliderTrack.querySelectorAll('.service-card'));
+    if (cards.length === 0) return;
+
+    // Определяем количество видимых карточек в зависимости от ширины экрана
+    function getVisibleCards() {
+        if (window.innerWidth <= 768) {
+            return 1; // Мобильные устройства
+        } else if (window.innerWidth <= 1024) {
+            return 2; // Планшеты
+        } else {
+            return 3; // Десктоп
+        }
+    }
+
+    let visibleCards = getVisibleCards();
+    let currentIndex = 0;
+    let totalSlides = Math.ceil(cards.length / visibleCards);
+
+    // Создаем пагинацию
+    function createPagination() {
+        paginationContainer.innerHTML = '';
+        totalSlides = Math.ceil(cards.length / visibleCards);
+
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('pagination-dot');
+            if (i === currentIndex) dot.classList.add('active');
+
+            dot.addEventListener('click', () => {
+                goToSlide(i);
+            });
+
+            paginationContainer.appendChild(dot);
+        }
+    }
+
+    // Обновляем активную точку пагинации
+    function updatePagination() {
+        const dots = paginationContainer.querySelectorAll('.pagination-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+        });
+    }
+
+    // Выравниваем высоту карточек
+    function equalizeCardHeights() {
+        // Сбрасываем высоту всех карточек
+        cards.forEach(card => {
+            card.style.height = 'auto';
+        });
+
+        // Группируем карточки по слайдам
+        const slides = [];
+        for (let i = 0; i < cards.length; i += visibleCards) {
+            slides.push(cards.slice(i, i + visibleCards));
+        }
+
+        // Для каждого слайда находим максимальную высоту и применяем её ко всем карточкам в слайде
+        slides.forEach(slideCards => {
+            let maxHeight = 0;
+            slideCards.forEach(card => {
+                const height = card.offsetHeight;
+                if (height > maxHeight) {
+                    maxHeight = height;
+                }
+            });
+
+            slideCards.forEach(card => {
+                card.style.height = `${maxHeight}px`;
+            });
+        });
+    }
+
+    // Перемещаем слайдер к определенному индексу
+    function goToSlide(index) {
+        // Обеспечиваем бесконечную прокрутку
+        if (index < 0) {
+            index = totalSlides - 1;
+        } else if (index >= totalSlides) {
+            index = 0;
+        }
+
+        currentIndex = index;
+        const offset = currentIndex * 100;
+        sliderTrack.style.transform = `translateX(-${offset}%)`;
+
+        updatePagination();
+    }
+
+    // Обработчики для кнопок
+    prevButton.addEventListener('click', () => {
+        goToSlide(currentIndex - 1);
+    });
+
+    nextButton.addEventListener('click', () => {
+        goToSlide(currentIndex + 1);
+    });
+
+    // Устанавливаем начальную ширину карточек
+    cards.forEach(card => {
+        card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
+    });
+
+    createPagination();
+
+    // Обработчик изменения размера окна
+    window.addEventListener('resize', () => {
+        const newVisibleCards = getVisibleCards();
+
+        if (newVisibleCards !== visibleCards) {
+            visibleCards = newVisibleCards;
+
+            // Пересчитываем ширину карточек
+            cards.forEach(card => {
+                card.style.flex = `0 0 calc(${100 / visibleCards}% - 2rem)`;
+            });
+
+            // Обновляем пагинацию и позицию слайдера
+            createPagination();
+            currentIndex = 0;
+            goToSlide(0);
+
+            // Перерасчет высоты карточек с задержкой
+            clearTimeout(window.resizeTimer);
+            window.resizeTimer = setTimeout(equalizeCardHeights, 300);
+        }
+    });
+
+    // Инициализация слайдера
+    createPagination();
+
+    // УЛУЧШЕННАЯ ОБРАБОТКА СВАЙПОВ с точным определением направления
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    let initialOffset = 0;
+    let isDragging = false;
+    let swipeDirection = null; // 'horizontal', 'vertical', или null
+    let isSwipeActive = false;
+
+    // Константы для определения направления
+    const MIN_SWIPE_DISTANCE = 15; // Минимальное расстояние для определения направления
+    const DIRECTION_THRESHOLD = 1.5; // Коэффициент преобладания направления
+    const SWIPE_ACTIVATION_DISTANCE = 25; // Минимальное расстояние для активации свайпа
+
+    // Добавляем плавность анимации для слайдера
+    sliderTrack.style.transition = 'transform 0.5s ease-out';
+
+    // Начало касания
+    sliderContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].clientX;
+        touchStartY = e.changedTouches[0].clientY;
+        initialOffset = currentIndex * 100;
+        isDragging = true;
+        swipeDirection = null;
+        isSwipeActive = false;
+
+        // Отключаем переход на время свайпа для мгновенной реакции
+        sliderTrack.style.transition = 'none';
+    }, { passive: true });
+
+    // КЛЮЧЕВАЯ ЛОГИКА: Улучшенное определение направления движения
+    sliderContainer.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+
+        const currentX = e.changedTouches[0].clientX;
+        const currentY = e.changedTouches[0].clientY;
+
+        const diffX = Math.abs(touchStartX - currentX);
+        const diffY = Math.abs(touchStartY - currentY);
+        const totalDistance = Math.sqrt(diffX * diffX + diffY * diffY);
+
+        // Определяем направление только после минимального движения
+        if (swipeDirection === null && totalDistance > MIN_SWIPE_DISTANCE) {
+            // Проверяем, какое направление преобладает с учетом порога
+            if (diffX > diffY * DIRECTION_THRESHOLD) {
+                swipeDirection = 'horizontal';
+            } else if (diffY > diffX * DIRECTION_THRESHOLD) {
+                swipeDirection = 'vertical';
+            }
+            // Если направления примерно равны, оставляем null (не определено)
+        }
+
+        // Активируем свайп только после достижения минимального расстояния
+        if (!isSwipeActive && totalDistance > SWIPE_ACTIVATION_DISTANCE) {
+            isSwipeActive = true;
+        }
+
+        // Обрабатываем только горизонтальные свайпы
+        if (swipeDirection === 'horizontal' && isSwipeActive) {
+            // ВАЖНО: предотвращаем вертикальный скролл только для горизонтальных свайпов
+            e.preventDefault();
+
+            const diff = touchStartX - currentX;
+            const swipePercent = (diff / sliderContainer.offsetWidth) * 100;
+
+            // Ограничиваем смещение, чтобы не уйти слишком далеко за пределы
+            const maxOffset = (totalSlides - 1) * 100;
+            let newOffset = initialOffset + swipePercent;
+
+            // Добавляем сопротивление при попытке свайпнуть за пределы
+            if (newOffset < 0) {
+                newOffset = newOffset / 3;
+            } else if (newOffset > maxOffset) {
+                newOffset = maxOffset + (newOffset - maxOffset) / 3;
+            }
+
+            // Применяем смещение к слайдеру
+            sliderTrack.style.transform = `translateX(-${newOffset}%)`;
+        }
+        // Для вертикальных свайпов или неопределенного направления - ничего не делаем
+        // Браузер сам обработает вертикальный скролл
+    }, { passive: false }); // ВАЖНО: passive: false для возможности вызова preventDefault()
+
+    // Окончание касания
+    sliderContainer.addEventListener('touchend', (e) => {
+        if (!isDragging) return;
+
+        touchEndX = e.changedTouches[0].clientX;
+        touchEndY = e.changedTouches[0].clientY;
+        isDragging = false;
+
+        // Возвращаем плавную анимацию
+        sliderTrack.style.transition = 'transform 0.5s ease-out';
+
+        // Обрабатываем завершение только для горизонтальных свайпов
+        if (swipeDirection === 'horizontal' && isSwipeActive) {
+            const diff = touchStartX - touchEndX;
+            const swipeThreshold = sliderContainer.offsetWidth * 0.2; // 20% ширины контейнера
+
+            if (Math.abs(diff) > swipeThreshold) {
+                // Свайп был достаточно сильным
+                if (diff > 0) {
+                    // Свайп влево - следующий слайд
+                    goToSlide(currentIndex + 1);
+                } else {
+                    // Свайп вправо - предыдущий слайд
+                    goToSlide(currentIndex - 1);
+                }
+            } else {
+                // Свайп был недостаточно сильным, возвращаемся к текущему слайду
+                goToSlide(currentIndex);
+            }
+        } else {
+            // Для вертикальных свайпов или неопределенного направления возвращаемся к текущему слайду
+            goToSlide(currentIndex);
+        }
+
+        // Сбрасываем состояние
+        swipeDirection = null;
+        isSwipeActive = false;
+    }, { passive: true });
+
+    // Добавляем обработчик для отмены свайпа при уходе пальца за пределы контейнера
+    sliderContainer.addEventListener('touchcancel', () => {
+        if (!isDragging) return;
+
+        isDragging = false;
+        swipeDirection = null;
+        isSwipeActive = false;
+        sliderTrack.style.transition = 'transform 0.5s ease-out';
+        goToSlide(currentIndex);
+    }, { passive: true });
+
+    // Возвращаем функцию equalizeCardHeights для использования позже
+    return equalizeCardHeights;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Модальное окно обратной связи
+    const contactModal = document.getElementById('contact-modal');
+    const contactModalClose = document.querySelector('.contact-modal-close');
+    const contactModalOverlay = document.querySelector('.contact-modal-overlay');
+
+    // Открытие по всем ссылкам href="#contacts"
+    document.querySelectorAll('[data-modal="contact-modal"]').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            if (contactModal) {
+                contactModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    });
+
+    function getScrollbarWidth() {
+        return window.innerWidth - document.documentElement.clientWidth;
+    }
+
+    function openContactModal() {
+        if (contactModal) {
+            contactModal.classList.add('active');
+            const scrollBarWidth = getScrollbarWidth();
             document.body.style.overflow = 'hidden';
             document.body.style.paddingRight = scrollBarWidth + 'px';
-        },
+        }
+    }
 
-        /**
-         * Close modal
-         * @param {HTMLElement} modal - Modal element
-         */
-        closeModal(modal) {
-            modal.classList.remove('active');
+    function closeContactModal() {
+        if (contactModal) {
+            contactModal.classList.remove('active');
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
         }
-    };
-
-    // Services Slider module
-    const ServicesSlider = {
-        init() {
-            const sliderTrack = document.querySelector('.services-slider-track');
-            const sliderContainer = document.querySelector('.services-slider-container');
-            const prevButton = document.querySelector('.slider-prev');
-            const nextButton = document.querySelector('.slider-next');
-            const paginationContainer = document.querySelector('.slider-pagination');
-
-            if (!sliderTrack || !sliderContainer || !prevButton || !nextButton || !paginationContainer) {
-                Utils.log('warn', 'Slider elements not found');
-                return;
-            }
-
-            this.sliderTrack = sliderTrack;
-            this.sliderContainer = sliderContainer;
-            this.prevButton = prevButton;
-            this.nextButton = nextButton;
-            this.paginationContainer = paginationContainer;
-            this.cards = Array.from(sliderTrack.querySelectorAll('.service-card'));
-            this.currentIndex = 0;
-
-            if (this.cards.length === 0) return;
-
-            this.setupSlider();
-            this.bindEvents();
-            this.initSwipeHandlers();
-        },
-
-        /**
-         * Setup slider initial state
-         */
-        setupSlider() {
-            this.updateVisibleCards();
-            this.createPagination();
-            this.updateCardWidths();
-            this.sliderTrack.style.transition = 'transform 0.5s ease-out';
-        },
-
-        /**
-         * Update number of visible cards based on screen size
-         */
-        updateVisibleCards() {
-            if (window.innerWidth <= CONFIG.BREAKPOINTS.MOBILE) {
-                this.visibleCards = 1;
-            } else if (window.innerWidth <= CONFIG.BREAKPOINTS.TABLET) {
-                this.visibleCards = 2;
-            } else {
-                this.visibleCards = 3;
-            }
-            this.totalSlides = Math.ceil(this.cards.length / this.visibleCards);
-        },
-
-        /**
-         * Create pagination dots
-         */
-        createPagination() {
-            this.paginationContainer.innerHTML = '';
-
-            for (let i = 0; i < this.totalSlides; i++) {
-                const dot = document.createElement('div');
-                dot.classList.add('pagination-dot');
-                if (i === this.currentIndex) dot.classList.add('active');
-
-                dot.addEventListener('click', () => this.goToSlide(i));
-                this.paginationContainer.appendChild(dot);
-            }
-        },
-
-        /**
-         * Update card widths based on visible cards
-         */
-        updateCardWidths() {
-            this.cards.forEach(card => {
-                card.style.flex = `0 0 calc(${100 / this.visibleCards}% - 2rem)`;
-            });
-        },
-
-        /**
-         * Go to specific slide
-         * @param {number} index - Slide index
-         */
-        goToSlide(index) {
-            // Handle infinite scroll
-            if (index < 0) {
-                index = this.totalSlides - 1;
-            } else if (index >= this.totalSlides) {
-                index = 0;
-            }
-
-            this.currentIndex = index;
-            const offset = this.currentIndex * 100;
-            this.sliderTrack.style.transform = `translateX(-${offset}%)`;
-            this.updatePagination();
-        },
-
-        /**
-         * Update pagination active state
-         */
-        updatePagination() {
-            const dots = this.paginationContainer.querySelectorAll('.pagination-dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === this.currentIndex);
-            });
-        },
-
-        /**
-         * Bind event listeners
-         */
-        bindEvents() {
-            this.prevButton.addEventListener('click', () => {
-                this.goToSlide(this.currentIndex - 1);
-            });
-
-            this.nextButton.addEventListener('click', () => {
-                this.goToSlide(this.currentIndex + 1);
-            });
-
-            const handleResize = Utils.debounce(() => {
-                const newVisibleCards = this.getVisibleCardsCount();
-
-                if (newVisibleCards !== this.visibleCards) {
-                    this.visibleCards = newVisibleCards;
-                    this.updateCardWidths();
-                    this.createPagination();
-                    this.currentIndex = 0;
-                    this.goToSlide(0);
-                }
-            }, 300);
-
-            window.addEventListener('resize', handleResize);
-        },
-
-        /**
-         * Get visible cards count based on screen size
-         * @returns {number} Number of visible cards
-         */
-        getVisibleCardsCount() {
-            if (window.innerWidth <= CONFIG.BREAKPOINTS.MOBILE) return 1;
-            if (window.innerWidth <= CONFIG.BREAKPOINTS.TABLET) return 2;
-            return 3;
-        },
-
-        /**
-         * Initialize swipe handlers for touch devices
-         */
-        initSwipeHandlers() {
-            let touchStartX = 0;
-            let touchStartY = 0;
-            let isDragging = false;
-            let swipeDirection = null;
-            let isSwipeActive = false;
-
-            this.sliderContainer.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].clientX;
-                touchStartY = e.changedTouches[0].clientY;
-                isDragging = true;
-                swipeDirection = null;
-                isSwipeActive = false;
-                this.sliderTrack.style.transition = 'none';
-            }, { passive: true });
-
-            this.sliderContainer.addEventListener('touchmove', (e) => {
-                if (!isDragging) return;
-
-                const currentX = e.changedTouches[0].clientX;
-                const currentY = e.changedTouches[0].clientY;
-                const diffX = Math.abs(touchStartX - currentX);
-                const diffY = Math.abs(touchStartY - currentY);
-                const totalDistance = Math.sqrt(diffX * diffX + diffY * diffY);
-
-                // Determine swipe direction
-                if (swipeDirection === null && totalDistance > CONFIG.SWIPE.MIN_DISTANCE) {
-                    if (diffX > diffY * CONFIG.SWIPE.DIRECTION_THRESHOLD) {
-                        swipeDirection = 'horizontal';
-                    } else if (diffY > diffX * CONFIG.SWIPE.DIRECTION_THRESHOLD) {
-                        swipeDirection = 'vertical';
-                    }
-                }
-
-                // Activate swipe after minimum distance
-                if (!isSwipeActive && totalDistance > CONFIG.SWIPE.ACTIVATION_DISTANCE) {
-                    isSwipeActive = true;
-                }
-
-                // Handle horizontal swipes
-                if (swipeDirection === 'horizontal' && isSwipeActive) {
-                    e.preventDefault();
-                    // Add visual feedback during swipe if needed
-                }
-            }, { passive: false });
-
-            this.sliderContainer.addEventListener('touchend', (e) => {
-                if (!isDragging) return;
-
-                const touchEndX = e.changedTouches[0].clientX;
-                isDragging = false;
-                this.sliderTrack.style.transition = 'transform 0.5s ease-out';
-
-                if (swipeDirection === 'horizontal' && isSwipeActive) {
-                    const diff = touchStartX - touchEndX;
-                    const swipeThreshold = this.sliderContainer.offsetWidth * CONFIG.SWIPE.SWIPE_THRESHOLD;
-
-                    if (Math.abs(diff) > swipeThreshold) {
-                        if (diff > 0) {
-                            this.goToSlide(this.currentIndex + 1);
-                        } else {
-                            this.goToSlide(this.currentIndex - 1);
-                        }
-                    } else {
-                        this.goToSlide(this.currentIndex);
-                    }
-                } else {
-                    this.goToSlide(this.currentIndex);
-                }
-
-                swipeDirection = null;
-                isSwipeActive = false;
-            }, { passive: true });
-        }
-    };
-
-    // Main application initialization
-    const App = {
-        /**
-         * Initialize the application
-         */
-        init() {
-            try {
-                Utils.log('info', 'Initializing website application');
-
-                Navigation.init();
-                Forms.init();
-                Animations.init();
-                Modal.init();
-                ServicesSlider.init();
-
-                // Set current year in footer
-                this.setCurrentYear();
-
-                Utils.log('info', 'Application initialized successfully');
-            } catch (error) {
-                Utils.log('error', 'Error initializing application', error);
-            }
-        },
-
-        /**
-         * Set current year in footer
-         */
-        setCurrentYear() {
-            const currentYearElement = document.getElementById('currentYear');
-            if (currentYearElement) {
-                currentYearElement.textContent = new Date().getFullYear();
-            }
-        }
-    };
-
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => App.init());
-    } else {
-        App.init();
     }
 
-    // Expose public API
-    window.CorporateWebsite = {
-        Utils,
-        FormValidator,
-        Navigation,
-        Forms,
-        Animations,
-        Modal,
-        ServicesSlider
-    };
+    if (contactModalClose) {
+        contactModalClose.addEventListener('click', closeContactModal);
+    }
+    if (contactModalOverlay) {
+        contactModalOverlay.addEventListener('click', closeContactModal);
+    }
 
-})(window, document);
+    // ESC для закрытия
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && contactModal && contactModal.classList.contains('active')) {
+            closeContactModal();
+        }
+    });
+
+    const equalizeHeights = initServicesSlider();
+
+    window.addEventListener('load', function () {
+        // Даем дополнительное время для завершения рендеринга
+        setTimeout(function () {
+            if (typeof equalizeHeights === 'function') {
+                equalizeHeights();
+            }
+        }, 100);
+    });
+});
